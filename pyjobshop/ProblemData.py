@@ -1,3 +1,4 @@
+import json
 from collections import Counter, defaultdict
 from copy import deepcopy
 from dataclasses import dataclass, field, fields
@@ -5,6 +6,7 @@ from itertools import pairwise
 from typing import Sequence, TypeVar
 
 from pyjobshop.constants import MAX_VALUE
+from pyjobshop.utils import from_dict, to_dict
 
 _T = TypeVar("_T")
 
@@ -1049,6 +1051,52 @@ class ProblemData:
             and self.constraints == other.constraints
             and self.objective == other.objective
         )
+
+    @classmethod
+    def from_dict(cls, data_dict):
+        """
+        Creates a dictionary from a ProblemData instance.
+        """
+        resources = []
+        for resource_dict in data_dict["resources"]:
+            # make a copy
+            r = dict(resource_dict)
+            typ = r.pop(
+                "type", r.pop("_type", None)
+            )  # support either key name
+
+            if typ == "Machine":
+                resources.append(Machine(**r))
+            elif typ == "Renewable":
+                resources.append(Renewable(**r))
+            elif typ == "Consumable":
+                resources.append(Consumable(**r))
+            else:
+                raise ValueError(f"Unknown resource type: {typ!r}")
+
+        return cls(
+            jobs=[Job(**job_params) for job_params in data_dict["jobs"]],
+            resources=resources,
+            tasks=[Task(**task_params) for task_params in data_dict["tasks"]],
+            modes=[Mode(**mode_params) for mode_params in data_dict["modes"]],
+            constraints=from_dict(Constraints, data_dict["constraints"]),
+            objective=Objective(**data_dict["objective"]),
+        )
+
+    @classmethod
+    def from_json(cls, json_location: str):
+        with open(json_location, "r", encoding="utf-8") as f:
+            as_dict = json.load(f)
+        return cls.from_dict(as_dict)
+
+    def to_dict(self):
+        return to_dict(self)
+
+    def to_json(self, output_location: str):
+        as_dict = self.to_dict()
+        json_str = json.dumps(as_dict, indent=2)
+        with open(output_location, "w", encoding="utf-8") as f:
+            f.write(json_str)
 
     def __str__(self):
         lines = [

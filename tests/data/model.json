@@ -1,0 +1,1517 @@
+{
+  "jobs": [
+    {
+      "weight": 1,
+      "release_date": 0,
+      "deadline": 4398046511104,
+      "due_date": null,
+      "tasks": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      "name": ""
+    },
+    {
+      "weight": 1,
+      "release_date": 0,
+      "deadline": 4398046511104,
+      "due_date": null,
+      "tasks": [
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "name": ""
+    },
+    {
+      "weight": 1,
+      "release_date": 0,
+      "deadline": 4398046511104,
+      "due_date": null,
+      "tasks": [
+        10,
+        11,
+        12,
+        13,
+        14
+      ],
+      "name": ""
+    },
+    {
+      "weight": 1,
+      "release_date": 0,
+      "deadline": 4398046511104,
+      "due_date": null,
+      "tasks": [
+        15,
+        16,
+        17,
+        18,
+        19
+      ],
+      "name": ""
+    },
+    {
+      "weight": 1,
+      "release_date": 0,
+      "deadline": 4398046511104,
+      "due_date": null,
+      "tasks": [
+        20,
+        21,
+        22,
+        23,
+        24
+      ],
+      "name": ""
+    },
+    {
+      "weight": 1,
+      "release_date": 0,
+      "deadline": 4398046511104,
+      "due_date": null,
+      "tasks": [
+        25,
+        26,
+        27,
+        28,
+        29
+      ],
+      "name": ""
+    },
+    {
+      "weight": 1,
+      "release_date": 0,
+      "deadline": 4398046511104,
+      "due_date": null,
+      "tasks": [
+        30,
+        31,
+        32,
+        33,
+        34
+      ],
+      "name": ""
+    },
+    {
+      "weight": 1,
+      "release_date": 0,
+      "deadline": 4398046511104,
+      "due_date": null,
+      "tasks": [
+        35,
+        36,
+        37,
+        38,
+        39
+      ],
+      "name": ""
+    },
+    {
+      "weight": 1,
+      "release_date": 0,
+      "deadline": 4398046511104,
+      "due_date": null,
+      "tasks": [
+        40,
+        41,
+        42,
+        43,
+        44
+      ],
+      "name": ""
+    },
+    {
+      "weight": 1,
+      "release_date": 0,
+      "deadline": 4398046511104,
+      "due_date": null,
+      "tasks": [
+        45,
+        46,
+        47,
+        48,
+        49
+      ],
+      "name": ""
+    }
+  ],
+  "resources": [
+    {
+      "breaks": [],
+      "no_idle": false,
+      "name": "",
+      "type": "Machine"
+    },
+    {
+      "breaks": [],
+      "no_idle": false,
+      "name": "",
+      "type": "Machine"
+    },
+    {
+      "breaks": [],
+      "no_idle": false,
+      "name": "",
+      "type": "Machine"
+    },
+    {
+      "breaks": [],
+      "no_idle": false,
+      "name": "",
+      "type": "Machine"
+    },
+    {
+      "breaks": [],
+      "no_idle": false,
+      "name": "",
+      "type": "Machine"
+    },
+    {
+      "capacity": 1,
+      "breaks": [],
+      "name": "",
+      "type": "Renewable"
+    },
+    {
+      "capacity": 1,
+      "breaks": [],
+      "name": "",
+      "type": "Renewable"
+    }
+  ],
+  "tasks": [
+    {
+      "job": 0,
+      "earliest_start": 0,
+      "latest_start": 4398046511104,
+      "earliest_end": 0,
+      "latest_end": 4398046511104,
+      "allow_idle": false,
+      "allow_breaks": false,
+      "optional": false,
+      "name": ""
+    },
+    {
+      "job": 0,
+      "earliest_start": 0,
+      "latest_start": 4398046511104,
+      "earliest_end": 0,
+      "latest_end": 4398046511104,
+      "allow_idle": false,
+      "allow_breaks": false,
+      "optional": false,
+      "name": ""
+    },
+    {
+      "job": 0,
+      "earliest_start": 0,
+      "latest_start": 4398046511104,
+      "earliest_end": 0,
+      "latest_end": 4398046511104,
+      "allow_idle": false,
+      "allow_breaks": false,
+      "optional": false,
+      "name": ""
+    },
+    {
+      "job": 0,
+      "earliest_start": 0,
+      "latest_start": 4398046511104,
+      "earliest_end": 0,
+      "latest_end": 4398046511104,
+      "allow_idle": false,
+      "allow_breaks": false,
+      "optional": false,
+      "name": ""
+    },
+    {
+      "job": 0,
+      "earliest_start": 0,
+      "latest_start": 4398046511104,
+      "earliest_end": 0,
+      "latest_end": 4398046511104,
+      "allow_idle": false,
+      "allow_breaks": false,
+      "optional": false,
+      "name": ""
+    },
+    {
+      "job": 1,
+      "earliest_start": 0,
+      "latest_start": 4398046511104,
+      "earliest_end": 0,
+      "latest_end": 4398046511104,
+      "allow_idle": false,
+      "allow_breaks": false,
+      "optional": false,
+      "name": ""
+    },
+    {
+      "job": 1,
+      "earliest_start": 0,
+      "latest_start": 4398046511104,
+      "earliest_end": 0,
+      "latest_end": 4398046511104,
+      "allow_idle": false,
+      "allow_breaks": false,
+      "optional": false,
+      "name": ""
+    },
+    {
+      "job": 1,
+      "earliest_start": 0,
+      "latest_start": 4398046511104,
+      "earliest_end": 0,
+      "latest_end": 4398046511104,
+      "allow_idle": false,
+      "allow_breaks": false,
+      "optional": false,
+      "name": ""
+    },
+    {
+      "job": 1,
+      "earliest_start": 0,
+      "latest_start": 4398046511104,
+      "earliest_end": 0,
+      "latest_end": 4398046511104,
+      "allow_idle": false,
+      "allow_breaks": false,
+      "optional": false,
+      "name": ""
+    },
+    {
+      "job": 1,
+      "earliest_start": 0,
+      "latest_start": 4398046511104,
+      "earliest_end": 0,
+      "latest_end": 4398046511104,
+      "allow_idle": false,
+      "allow_breaks": false,
+      "optional": false,
+      "name": ""
+    },
+    {
+      "job": 2,
+      "earliest_start": 0,
+      "latest_start": 4398046511104,
+      "earliest_end": 0,
+      "latest_end": 4398046511104,
+      "allow_idle": false,
+      "allow_breaks": false,
+      "optional": false,
+      "name": ""
+    },
+    {
+      "job": 2,
+      "earliest_start": 0,
+      "latest_start": 4398046511104,
+      "earliest_end": 0,
+      "latest_end": 4398046511104,
+      "allow_idle": false,
+      "allow_breaks": false,
+      "optional": false,
+      "name": ""
+    },
+    {
+      "job": 2,
+      "earliest_start": 0,
+      "latest_start": 4398046511104,
+      "earliest_end": 0,
+      "latest_end": 4398046511104,
+      "allow_idle": false,
+      "allow_breaks": false,
+      "optional": false,
+      "name": ""
+    },
+    {
+      "job": 2,
+      "earliest_start": 0,
+      "latest_start": 4398046511104,
+      "earliest_end": 0,
+      "latest_end": 4398046511104,
+      "allow_idle": false,
+      "allow_breaks": false,
+      "optional": false,
+      "name": ""
+    },
+    {
+      "job": 2,
+      "earliest_start": 0,
+      "latest_start": 4398046511104,
+      "earliest_end": 0,
+      "latest_end": 4398046511104,
+      "allow_idle": false,
+      "allow_breaks": false,
+      "optional": false,
+      "name": ""
+    },
+    {
+      "job": 3,
+      "earliest_start": 0,
+      "latest_start": 4398046511104,
+      "earliest_end": 0,
+      "latest_end": 4398046511104,
+      "allow_idle": false,
+      "allow_breaks": false,
+      "optional": false,
+      "name": ""
+    },
+    {
+      "job": 3,
+      "earliest_start": 0,
+      "latest_start": 4398046511104,
+      "earliest_end": 0,
+      "latest_end": 4398046511104,
+      "allow_idle": false,
+      "allow_breaks": false,
+      "optional": false,
+      "name": ""
+    },
+    {
+      "job": 3,
+      "earliest_start": 0,
+      "latest_start": 4398046511104,
+      "earliest_end": 0,
+      "latest_end": 4398046511104,
+      "allow_idle": false,
+      "allow_breaks": false,
+      "optional": false,
+      "name": ""
+    },
+    {
+      "job": 3,
+      "earliest_start": 0,
+      "latest_start": 4398046511104,
+      "earliest_end": 0,
+      "latest_end": 4398046511104,
+      "allow_idle": false,
+      "allow_breaks": false,
+      "optional": false,
+      "name": ""
+    },
+    {
+      "job": 3,
+      "earliest_start": 0,
+      "latest_start": 4398046511104,
+      "earliest_end": 0,
+      "latest_end": 4398046511104,
+      "allow_idle": false,
+      "allow_breaks": false,
+      "optional": false,
+      "name": ""
+    },
+    {
+      "job": 4,
+      "earliest_start": 0,
+      "latest_start": 4398046511104,
+      "earliest_end": 0,
+      "latest_end": 4398046511104,
+      "allow_idle": false,
+      "allow_breaks": false,
+      "optional": false,
+      "name": ""
+    },
+    {
+      "job": 4,
+      "earliest_start": 0,
+      "latest_start": 4398046511104,
+      "earliest_end": 0,
+      "latest_end": 4398046511104,
+      "allow_idle": false,
+      "allow_breaks": false,
+      "optional": false,
+      "name": ""
+    },
+    {
+      "job": 4,
+      "earliest_start": 0,
+      "latest_start": 4398046511104,
+      "earliest_end": 0,
+      "latest_end": 4398046511104,
+      "allow_idle": false,
+      "allow_breaks": false,
+      "optional": false,
+      "name": ""
+    },
+    {
+      "job": 4,
+      "earliest_start": 0,
+      "latest_start": 4398046511104,
+      "earliest_end": 0,
+      "latest_end": 4398046511104,
+      "allow_idle": false,
+      "allow_breaks": false,
+      "optional": false,
+      "name": ""
+    },
+    {
+      "job": 4,
+      "earliest_start": 0,
+      "latest_start": 4398046511104,
+      "earliest_end": 0,
+      "latest_end": 4398046511104,
+      "allow_idle": false,
+      "allow_breaks": false,
+      "optional": false,
+      "name": ""
+    },
+    {
+      "job": 5,
+      "earliest_start": 0,
+      "latest_start": 4398046511104,
+      "earliest_end": 0,
+      "latest_end": 4398046511104,
+      "allow_idle": false,
+      "allow_breaks": false,
+      "optional": false,
+      "name": ""
+    },
+    {
+      "job": 5,
+      "earliest_start": 0,
+      "latest_start": 4398046511104,
+      "earliest_end": 0,
+      "latest_end": 4398046511104,
+      "allow_idle": false,
+      "allow_breaks": false,
+      "optional": false,
+      "name": ""
+    },
+    {
+      "job": 5,
+      "earliest_start": 0,
+      "latest_start": 4398046511104,
+      "earliest_end": 0,
+      "latest_end": 4398046511104,
+      "allow_idle": false,
+      "allow_breaks": false,
+      "optional": false,
+      "name": ""
+    },
+    {
+      "job": 5,
+      "earliest_start": 0,
+      "latest_start": 4398046511104,
+      "earliest_end": 0,
+      "latest_end": 4398046511104,
+      "allow_idle": false,
+      "allow_breaks": false,
+      "optional": false,
+      "name": ""
+    },
+    {
+      "job": 5,
+      "earliest_start": 0,
+      "latest_start": 4398046511104,
+      "earliest_end": 0,
+      "latest_end": 4398046511104,
+      "allow_idle": false,
+      "allow_breaks": false,
+      "optional": false,
+      "name": ""
+    },
+    {
+      "job": 6,
+      "earliest_start": 0,
+      "latest_start": 4398046511104,
+      "earliest_end": 0,
+      "latest_end": 4398046511104,
+      "allow_idle": false,
+      "allow_breaks": false,
+      "optional": false,
+      "name": ""
+    },
+    {
+      "job": 6,
+      "earliest_start": 0,
+      "latest_start": 4398046511104,
+      "earliest_end": 0,
+      "latest_end": 4398046511104,
+      "allow_idle": false,
+      "allow_breaks": false,
+      "optional": false,
+      "name": ""
+    },
+    {
+      "job": 6,
+      "earliest_start": 0,
+      "latest_start": 4398046511104,
+      "earliest_end": 0,
+      "latest_end": 4398046511104,
+      "allow_idle": false,
+      "allow_breaks": false,
+      "optional": false,
+      "name": ""
+    },
+    {
+      "job": 6,
+      "earliest_start": 0,
+      "latest_start": 4398046511104,
+      "earliest_end": 0,
+      "latest_end": 4398046511104,
+      "allow_idle": false,
+      "allow_breaks": false,
+      "optional": false,
+      "name": ""
+    },
+    {
+      "job": 6,
+      "earliest_start": 0,
+      "latest_start": 4398046511104,
+      "earliest_end": 0,
+      "latest_end": 4398046511104,
+      "allow_idle": false,
+      "allow_breaks": false,
+      "optional": false,
+      "name": ""
+    },
+    {
+      "job": 7,
+      "earliest_start": 0,
+      "latest_start": 4398046511104,
+      "earliest_end": 0,
+      "latest_end": 4398046511104,
+      "allow_idle": false,
+      "allow_breaks": false,
+      "optional": false,
+      "name": ""
+    },
+    {
+      "job": 7,
+      "earliest_start": 0,
+      "latest_start": 4398046511104,
+      "earliest_end": 0,
+      "latest_end": 4398046511104,
+      "allow_idle": false,
+      "allow_breaks": false,
+      "optional": false,
+      "name": ""
+    },
+    {
+      "job": 7,
+      "earliest_start": 0,
+      "latest_start": 4398046511104,
+      "earliest_end": 0,
+      "latest_end": 4398046511104,
+      "allow_idle": false,
+      "allow_breaks": false,
+      "optional": false,
+      "name": ""
+    },
+    {
+      "job": 7,
+      "earliest_start": 0,
+      "latest_start": 4398046511104,
+      "earliest_end": 0,
+      "latest_end": 4398046511104,
+      "allow_idle": false,
+      "allow_breaks": false,
+      "optional": false,
+      "name": ""
+    },
+    {
+      "job": 7,
+      "earliest_start": 0,
+      "latest_start": 4398046511104,
+      "earliest_end": 0,
+      "latest_end": 4398046511104,
+      "allow_idle": false,
+      "allow_breaks": false,
+      "optional": false,
+      "name": ""
+    },
+    {
+      "job": 8,
+      "earliest_start": 0,
+      "latest_start": 4398046511104,
+      "earliest_end": 0,
+      "latest_end": 4398046511104,
+      "allow_idle": false,
+      "allow_breaks": false,
+      "optional": false,
+      "name": ""
+    },
+    {
+      "job": 8,
+      "earliest_start": 0,
+      "latest_start": 4398046511104,
+      "earliest_end": 0,
+      "latest_end": 4398046511104,
+      "allow_idle": false,
+      "allow_breaks": false,
+      "optional": false,
+      "name": ""
+    },
+    {
+      "job": 8,
+      "earliest_start": 0,
+      "latest_start": 4398046511104,
+      "earliest_end": 0,
+      "latest_end": 4398046511104,
+      "allow_idle": false,
+      "allow_breaks": false,
+      "optional": false,
+      "name": ""
+    },
+    {
+      "job": 8,
+      "earliest_start": 0,
+      "latest_start": 4398046511104,
+      "earliest_end": 0,
+      "latest_end": 4398046511104,
+      "allow_idle": false,
+      "allow_breaks": false,
+      "optional": false,
+      "name": ""
+    },
+    {
+      "job": 8,
+      "earliest_start": 0,
+      "latest_start": 4398046511104,
+      "earliest_end": 0,
+      "latest_end": 4398046511104,
+      "allow_idle": false,
+      "allow_breaks": false,
+      "optional": false,
+      "name": ""
+    },
+    {
+      "job": 9,
+      "earliest_start": 0,
+      "latest_start": 4398046511104,
+      "earliest_end": 0,
+      "latest_end": 4398046511104,
+      "allow_idle": false,
+      "allow_breaks": false,
+      "optional": false,
+      "name": ""
+    },
+    {
+      "job": 9,
+      "earliest_start": 0,
+      "latest_start": 4398046511104,
+      "earliest_end": 0,
+      "latest_end": 4398046511104,
+      "allow_idle": false,
+      "allow_breaks": false,
+      "optional": false,
+      "name": ""
+    },
+    {
+      "job": 9,
+      "earliest_start": 0,
+      "latest_start": 4398046511104,
+      "earliest_end": 0,
+      "latest_end": 4398046511104,
+      "allow_idle": false,
+      "allow_breaks": false,
+      "optional": false,
+      "name": ""
+    },
+    {
+      "job": 9,
+      "earliest_start": 0,
+      "latest_start": 4398046511104,
+      "earliest_end": 0,
+      "latest_end": 4398046511104,
+      "allow_idle": false,
+      "allow_breaks": false,
+      "optional": false,
+      "name": ""
+    },
+    {
+      "job": 9,
+      "earliest_start": 0,
+      "latest_start": 4398046511104,
+      "earliest_end": 0,
+      "latest_end": 4398046511104,
+      "allow_idle": false,
+      "allow_breaks": false,
+      "optional": false,
+      "name": ""
+    }
+  ],
+  "modes": [
+    {
+      "task": 0,
+      "resources": [
+        1
+      ],
+      "duration": 21,
+      "demands": [
+        0
+      ],
+      "name": ""
+    },
+    {
+      "task": 1,
+      "resources": [
+        0
+      ],
+      "duration": 53,
+      "demands": [
+        0
+      ],
+      "name": ""
+    },
+    {
+      "task": 2,
+      "resources": [
+        4
+      ],
+      "duration": 95,
+      "demands": [
+        0
+      ],
+      "name": ""
+    },
+    {
+      "task": 3,
+      "resources": [
+        3
+      ],
+      "duration": 55,
+      "demands": [
+        0
+      ],
+      "name": ""
+    },
+    {
+      "task": 4,
+      "resources": [
+        2
+      ],
+      "duration": 34,
+      "demands": [
+        0
+      ],
+      "name": ""
+    },
+    {
+      "task": 5,
+      "resources": [
+        0
+      ],
+      "duration": 21,
+      "demands": [
+        0
+      ],
+      "name": ""
+    },
+    {
+      "task": 6,
+      "resources": [
+        3
+      ],
+      "duration": 52,
+      "demands": [
+        0
+      ],
+      "name": ""
+    },
+    {
+      "task": 7,
+      "resources": [
+        4
+      ],
+      "duration": 16,
+      "demands": [
+        0
+      ],
+      "name": ""
+    },
+    {
+      "task": 8,
+      "resources": [
+        2
+      ],
+      "duration": 26,
+      "demands": [
+        0
+      ],
+      "name": ""
+    },
+    {
+      "task": 9,
+      "resources": [
+        1
+      ],
+      "duration": 71,
+      "demands": [
+        0
+      ],
+      "name": ""
+    },
+    {
+      "task": 10,
+      "resources": [
+        3
+      ],
+      "duration": 39,
+      "demands": [
+        0
+      ],
+      "name": ""
+    },
+    {
+      "task": 11,
+      "resources": [
+        4
+      ],
+      "duration": 98,
+      "demands": [
+        0
+      ],
+      "name": ""
+    },
+    {
+      "task": 12,
+      "resources": [
+        1
+      ],
+      "duration": 42,
+      "demands": [
+        0
+      ],
+      "name": ""
+    },
+    {
+      "task": 13,
+      "resources": [
+        2
+      ],
+      "duration": 31,
+      "demands": [
+        0
+      ],
+      "name": ""
+    },
+    {
+      "task": 14,
+      "resources": [
+        0
+      ],
+      "duration": 12,
+      "demands": [
+        0
+      ],
+      "name": ""
+    },
+    {
+      "task": 15,
+      "resources": [
+        1
+      ],
+      "duration": 77,
+      "demands": [
+        0
+      ],
+      "name": ""
+    },
+    {
+      "task": 16,
+      "resources": [
+        0
+      ],
+      "duration": 55,
+      "demands": [
+        0
+      ],
+      "name": ""
+    },
+    {
+      "task": 17,
+      "resources": [
+        4
+      ],
+      "duration": 79,
+      "demands": [
+        0
+      ],
+      "name": ""
+    },
+    {
+      "task": 18,
+      "resources": [
+        2
+      ],
+      "duration": 66,
+      "demands": [
+        0
+      ],
+      "name": ""
+    },
+    {
+      "task": 19,
+      "resources": [
+        3
+      ],
+      "duration": 77,
+      "demands": [
+        0
+      ],
+      "name": ""
+    },
+    {
+      "task": 20,
+      "resources": [
+        0
+      ],
+      "duration": 83,
+      "demands": [
+        0
+      ],
+      "name": ""
+    },
+    {
+      "task": 21,
+      "resources": [
+        3
+      ],
+      "duration": 34,
+      "demands": [
+        0
+      ],
+      "name": ""
+    },
+    {
+      "task": 22,
+      "resources": [
+        2
+      ],
+      "duration": 64,
+      "demands": [
+        0
+      ],
+      "name": ""
+    },
+    {
+      "task": 23,
+      "resources": [
+        1
+      ],
+      "duration": 19,
+      "demands": [
+        0
+      ],
+      "name": ""
+    },
+    {
+      "task": 24,
+      "resources": [
+        4
+      ],
+      "duration": 37,
+      "demands": [
+        0
+      ],
+      "name": ""
+    },
+    {
+      "task": 25,
+      "resources": [
+        1
+      ],
+      "duration": 54,
+      "demands": [
+        0
+      ],
+      "name": ""
+    },
+    {
+      "task": 26,
+      "resources": [
+        2
+      ],
+      "duration": 43,
+      "demands": [
+        0
+      ],
+      "name": ""
+    },
+    {
+      "task": 27,
+      "resources": [
+        4
+      ],
+      "duration": 79,
+      "demands": [
+        0
+      ],
+      "name": ""
+    },
+    {
+      "task": 28,
+      "resources": [
+        0
+      ],
+      "duration": 92,
+      "demands": [
+        0
+      ],
+      "name": ""
+    },
+    {
+      "task": 29,
+      "resources": [
+        3
+      ],
+      "duration": 62,
+      "demands": [
+        0
+      ],
+      "name": ""
+    },
+    {
+      "task": 30,
+      "resources": [
+        3
+      ],
+      "duration": 69,
+      "demands": [
+        0
+      ],
+      "name": ""
+    },
+    {
+      "task": 31,
+      "resources": [
+        4
+      ],
+      "duration": 77,
+      "demands": [
+        0
+      ],
+      "name": ""
+    },
+    {
+      "task": 32,
+      "resources": [
+        1
+      ],
+      "duration": 87,
+      "demands": [
+        0
+      ],
+      "name": ""
+    },
+    {
+      "task": 33,
+      "resources": [
+        2
+      ],
+      "duration": 87,
+      "demands": [
+        0
+      ],
+      "name": ""
+    },
+    {
+      "task": 34,
+      "resources": [
+        0
+      ],
+      "duration": 93,
+      "demands": [
+        0
+      ],
+      "name": ""
+    },
+    {
+      "task": 35,
+      "resources": [
+        2
+      ],
+      "duration": 38,
+      "demands": [
+        0
+      ],
+      "name": ""
+    },
+    {
+      "task": 36,
+      "resources": [
+        0
+      ],
+      "duration": 60,
+      "demands": [
+        0
+      ],
+      "name": ""
+    },
+    {
+      "task": 37,
+      "resources": [
+        1
+      ],
+      "duration": 41,
+      "demands": [
+        0
+      ],
+      "name": ""
+    },
+    {
+      "task": 38,
+      "resources": [
+        3
+      ],
+      "duration": 24,
+      "demands": [
+        0
+      ],
+      "name": ""
+    },
+    {
+      "task": 39,
+      "resources": [
+        4
+      ],
+      "duration": 83,
+      "demands": [
+        0
+      ],
+      "name": ""
+    },
+    {
+      "task": 40,
+      "resources": [
+        3
+      ],
+      "duration": 17,
+      "demands": [
+        0
+      ],
+      "name": ""
+    },
+    {
+      "task": 41,
+      "resources": [
+        1
+      ],
+      "duration": 49,
+      "demands": [
+        0
+      ],
+      "name": ""
+    },
+    {
+      "task": 42,
+      "resources": [
+        4
+      ],
+      "duration": 25,
+      "demands": [
+        0
+      ],
+      "name": ""
+    },
+    {
+      "task": 43,
+      "resources": [
+        0
+      ],
+      "duration": 44,
+      "demands": [
+        0
+      ],
+      "name": ""
+    },
+    {
+      "task": 44,
+      "resources": [
+        2
+      ],
+      "duration": 98,
+      "demands": [
+        0
+      ],
+      "name": ""
+    },
+    {
+      "task": 45,
+      "resources": [
+        4
+      ],
+      "duration": 77,
+      "demands": [
+        0
+      ],
+      "name": ""
+    },
+    {
+      "task": 46,
+      "resources": [
+        3
+      ],
+      "duration": 79,
+      "demands": [
+        0
+      ],
+      "name": ""
+    },
+    {
+      "task": 47,
+      "resources": [
+        2
+      ],
+      "duration": 43,
+      "demands": [
+        0
+      ],
+      "name": ""
+    },
+    {
+      "task": 48,
+      "resources": [
+        1
+      ],
+      "duration": 75,
+      "demands": [
+        0
+      ],
+      "name": ""
+    },
+    {
+      "task": 49,
+      "resources": [
+        0
+      ],
+      "duration": 96,
+      "demands": [
+        0
+      ],
+      "name": ""
+    }
+  ],
+  "constraints": {
+    "start_before_start": [],
+    "start_before_end": [],
+    "end_before_start": [
+      {
+        "task1": 0,
+        "task2": 1,
+        "delay": 0
+      },
+      {
+        "task1": 1,
+        "task2": 2,
+        "delay": 0
+      },
+      {
+        "task1": 2,
+        "task2": 3,
+        "delay": 0
+      },
+      {
+        "task1": 3,
+        "task2": 4,
+        "delay": 0
+      },
+      {
+        "task1": 5,
+        "task2": 6,
+        "delay": 0
+      },
+      {
+        "task1": 6,
+        "task2": 7,
+        "delay": 0
+      },
+      {
+        "task1": 7,
+        "task2": 8,
+        "delay": 0
+      },
+      {
+        "task1": 8,
+        "task2": 9,
+        "delay": 0
+      },
+      {
+        "task1": 10,
+        "task2": 11,
+        "delay": 0
+      },
+      {
+        "task1": 11,
+        "task2": 12,
+        "delay": 0
+      },
+      {
+        "task1": 12,
+        "task2": 13,
+        "delay": 0
+      },
+      {
+        "task1": 13,
+        "task2": 14,
+        "delay": 0
+      },
+      {
+        "task1": 15,
+        "task2": 16,
+        "delay": 0
+      },
+      {
+        "task1": 16,
+        "task2": 17,
+        "delay": 0
+      },
+      {
+        "task1": 17,
+        "task2": 18,
+        "delay": 0
+      },
+      {
+        "task1": 18,
+        "task2": 19,
+        "delay": 0
+      },
+      {
+        "task1": 20,
+        "task2": 21,
+        "delay": 0
+      },
+      {
+        "task1": 21,
+        "task2": 22,
+        "delay": 0
+      },
+      {
+        "task1": 22,
+        "task2": 23,
+        "delay": 0
+      },
+      {
+        "task1": 23,
+        "task2": 24,
+        "delay": 0
+      },
+      {
+        "task1": 25,
+        "task2": 26,
+        "delay": 0
+      },
+      {
+        "task1": 26,
+        "task2": 27,
+        "delay": 0
+      },
+      {
+        "task1": 27,
+        "task2": 28,
+        "delay": 0
+      },
+      {
+        "task1": 28,
+        "task2": 29,
+        "delay": 0
+      },
+      {
+        "task1": 30,
+        "task2": 31,
+        "delay": 0
+      },
+      {
+        "task1": 31,
+        "task2": 32,
+        "delay": 0
+      },
+      {
+        "task1": 32,
+        "task2": 33,
+        "delay": 0
+      },
+      {
+        "task1": 33,
+        "task2": 34,
+        "delay": 0
+      },
+      {
+        "task1": 35,
+        "task2": 36,
+        "delay": 0
+      },
+      {
+        "task1": 36,
+        "task2": 37,
+        "delay": 0
+      },
+      {
+        "task1": 37,
+        "task2": 38,
+        "delay": 0
+      },
+      {
+        "task1": 38,
+        "task2": 39,
+        "delay": 0
+      },
+      {
+        "task1": 40,
+        "task2": 41,
+        "delay": 0
+      },
+      {
+        "task1": 41,
+        "task2": 42,
+        "delay": 0
+      },
+      {
+        "task1": 42,
+        "task2": 43,
+        "delay": 0
+      },
+      {
+        "task1": 43,
+        "task2": 44,
+        "delay": 0
+      },
+      {
+        "task1": 45,
+        "task2": 46,
+        "delay": 0
+      },
+      {
+        "task1": 46,
+        "task2": 47,
+        "delay": 0
+      },
+      {
+        "task1": 47,
+        "task2": 48,
+        "delay": 0
+      },
+      {
+        "task1": 48,
+        "task2": 49,
+        "delay": 0
+      }
+    ],
+    "end_before_end": [],
+    "identical_resources": [],
+    "different_resources": [],
+    "consecutive": [],
+    "same_sequence": [],
+    "setup_times": [],
+    "mode_dependencies": [],
+    "select_all_or_none": [],
+    "select_at_least_one": [],
+    "select_exactly_one": []
+  },
+  "objective": {
+    "weight_makespan": 1,
+    "weight_tardy_jobs": 0,
+    "weight_total_flow_time": 0,
+    "weight_total_tardiness": 0,
+    "weight_total_earliness": 0,
+    "weight_max_tardiness": 0,
+    "weight_total_setup_time": 0
+  }
+}
