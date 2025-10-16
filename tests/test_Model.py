@@ -8,18 +8,16 @@ from pyjobshop.ProblemData import (
     EndBeforeEnd,
     EndBeforeStart,
     IdenticalResources,
-    Job,
-    Machine,
     Mode,
     ModeDependency,
-    NonRenewable,
     Objective,
-    ProblemData,
-    Renewable,
+    SameSequence,
+    SelectAllOrNone,
+    SelectAtLeastOne,
+    SelectExactlyOne,
     SetupTime,
     StartBeforeEnd,
     StartBeforeStart,
-    Task,
 )
 from pyjobshop.Solution import Solution, TaskData
 
@@ -44,10 +42,13 @@ def test_model_to_data():
     model.add_identical_resources(task2, task1)
     model.add_different_resources(task2, task1)
     model.add_consecutive(task2, task1)
-    model.add_mode_dependency(mode1, [mode2])
-
+    model.add_same_sequence(machine1, machine2, [task1], [task2])
     model.add_setup_time(machine1, task1, task2, 3)
     model.add_setup_time(machine2, task1, task2, 4)
+    model.add_mode_dependency(mode1, [mode2])
+    model.add_select_all_or_none([task1, task2], task1)
+    model.add_select_at_least_one([task1, task2])
+    model.add_select_exactly_one([task1, task2])
 
     model.set_objective(weight_total_flow_time=1)
 
@@ -64,55 +65,31 @@ def test_model_to_data():
         ],
     )
 
-    constraints = data.constraints
-    assert_equal(constraints.start_before_start, [StartBeforeStart(0, 1)])
-    assert_equal(constraints.start_before_end, [StartBeforeEnd(0, 1)])
-    assert_equal(constraints.end_before_end, [EndBeforeEnd(0, 1)])
-    assert_equal(constraints.end_before_start, [EndBeforeStart(0, 1)])
-    assert_equal(constraints.identical_resources, [IdenticalResources(1, 0)])
-    assert_equal(constraints.different_resources, [DifferentResources(1, 0)])
-    assert_equal(constraints.consecutive, [Consecutive(1, 0)])
-    assert_equal(constraints.mode_dependencies, [ModeDependency(0, [1])])
-    assert_equal(
-        constraints.setup_times, [SetupTime(0, 0, 1, 3), SetupTime(1, 0, 1, 4)]
+    constraints = Constraints(
+        start_before_start=[StartBeforeStart(0, 1)],
+        start_before_end=[StartBeforeEnd(0, 1)],
+        end_before_end=[EndBeforeEnd(0, 1)],
+        end_before_start=[EndBeforeStart(0, 1)],
+        identical_resources=[IdenticalResources(1, 0)],
+        different_resources=[DifferentResources(1, 0)],
+        consecutive=[Consecutive(1, 0)],
+        same_sequence=[SameSequence(0, 1, [0], [1])],
+        setup_times=[SetupTime(0, 0, 1, 3), SetupTime(1, 0, 1, 4)],
+        mode_dependencies=[ModeDependency(0, [1])],
+        select_all_or_none=[SelectAllOrNone([0, 1], 0)],
+        select_at_least_one=[SelectAtLeastOne([0, 1], None)],
+        select_exactly_one=[SelectExactlyOne([0, 1], None)],
     )
+    assert_equal(data.constraints, constraints)
     assert_equal(data.objective, Objective(weight_total_flow_time=1))
 
 
-def test_from_data():
+def test_from_data(complete_data):
     """
     Tests that initializing from a data instance returns a valid model
     representation of that instance.
     """
-    data = ProblemData(
-        [Job(tasks=[1], due_date=1)],
-        [Machine(), Renewable(1), NonRenewable(0)],
-        [Task(), Task(job=0), Task()],
-        modes=[Mode(0, [0], 1), Mode(1, [1], 2), Mode(2, [1], 2)],
-        constraints=Constraints(
-            start_before_start=[StartBeforeStart(0, 1)],
-            start_before_end=[StartBeforeEnd(0, 1)],
-            end_before_start=[EndBeforeStart(0, 1)],
-            end_before_end=[EndBeforeEnd(0, 1)],
-            identical_resources=[IdenticalResources(0, 1)],
-            different_resources=[DifferentResources(0, 1)],
-            consecutive=[Consecutive(1, 2)],
-            setup_times=[
-                SetupTime(0, 0, 1, 1),  # machine
-                SetupTime(1, 0, 1, 0),  # renewable
-                SetupTime(2, 0, 1, 0),  # non-renewable
-            ],
-        ),
-        objective=Objective(
-            weight_makespan=2,
-            weight_tardy_jobs=3,
-            weight_total_tardiness=4,
-            weight_total_flow_time=5,
-            weight_total_earliness=6,
-            weight_max_tardiness=7,
-            weight_max_lateness=8,
-        ),
-    )
+    data = complete_data
     model = Model.from_data(data)
     m_data = model.data()
 
@@ -185,7 +162,10 @@ def test_add_machine_attributes():
     """
     model = Model()
 
-    machine = model.add_machine(name="machine")
+    machine = model.add_machine(breaks=[], no_idle=True, name="machine")
+
+    assert_equal(machine.breaks, [])
+    assert_equal(machine.no_idle, True)
     assert_equal(machine.name, "machine")
 
 
@@ -195,22 +175,28 @@ def test_add_renewable_resource_attributes():
     """
     model = Model()
 
-    renewable = model.add_renewable(capacity=1, name="resource")
+    renewable = model.add_renewable(
+        capacity=1, breaks=[(0, 1), (1, 2)], name="resource"
+    )
 
     assert_equal(renewable.capacity, 1)
+    assert_equal(renewable.breaks, [(0, 1), (1, 2)])
     assert_equal(renewable.name, "resource")
 
 
-def test_add_non_renewable_resource_attributes():
+def test_add_consumable_resource_attributes():
     """
     Tests that adding a resource to the model correctly sets the attributes.
     """
     model = Model()
 
-    non_renewable = model.add_non_renewable(capacity=1, name="resource")
+    consumable = model.add_consumable(
+        capacity=1, breaks=[(0, 1)], name="resource"
+    )
 
-    assert_equal(non_renewable.capacity, 1)
-    assert_equal(non_renewable.name, "resource")
+    assert_equal(consumable.capacity, 1)
+    assert_equal(consumable.breaks, [(0, 1)])
+    assert_equal(consumable.name, "resource")
 
 
 def test_add_task_attributes():
@@ -224,7 +210,9 @@ def test_add_task_attributes():
         latest_start=2,
         earliest_end=3,
         latest_end=4,
-        fixed_duration=True,
+        allow_idle=False,
+        allow_breaks=True,
+        optional=False,
         name="task",
     )
 
@@ -232,7 +220,9 @@ def test_add_task_attributes():
     assert_equal(task.latest_start, 2)
     assert_equal(task.earliest_end, 3)
     assert_equal(task.latest_end, 4)
-    assert_equal(task.fixed_duration, True)
+    assert_equal(task.allow_idle, False)
+    assert_equal(task.allow_breaks, True)
+    assert_equal(task.optional, False)
     assert_equal(task.name, "task")
 
 
@@ -245,12 +235,15 @@ def test_add_mode_attributes():
     task = model.add_task()
     resources = [model.add_machine() for _ in range(3)]
 
-    mode = model.add_mode(task, resources, duration=1, demands=[1, 2, 3])
+    mode = model.add_mode(
+        task, resources, duration=1, demands=[1, 2, 3], name="mode"
+    )
 
     assert_equal(mode.task, 0)
     assert_equal(mode.resources, [0, 1, 2])
     assert_equal(mode.duration, 1)
     assert_equal(mode.demands, [1, 2, 3])
+    assert_equal(mode.name, "mode")
 
 
 def test_add_mode_single_resource():
@@ -268,6 +261,7 @@ def test_add_mode_single_resource():
     assert_equal(mode.resources, [0])
     assert_equal(mode.duration, 1)
     assert_equal(mode.demands, [1])
+    assert_equal(mode.name, "")
 
 
 def test_model_attributes():
@@ -305,8 +299,7 @@ def test_model_set_objective():
         weight_total_flow_time=4,
         weight_total_earliness=5,
         weight_max_tardiness=6,
-        weight_max_lateness=7,
-        weight_total_setup_time=8,
+        weight_total_setup_time=7,
     )
 
     assert_equal(model.objective.weight_makespan, 1)
@@ -315,8 +308,37 @@ def test_model_set_objective():
     assert_equal(model.objective.weight_total_flow_time, 4)
     assert_equal(model.objective.weight_total_earliness, 5)
     assert_equal(model.objective.weight_max_tardiness, 6)
-    assert_equal(model.objective.weight_max_lateness, 7)
-    assert_equal(model.objective.weight_total_setup_time, 8)
+    assert_equal(model.objective.weight_total_setup_time, 7)
+
+
+def test_summary():
+    """
+    Tests that the summary method returns a string representation of the
+    problem data built from the model.
+    """
+    model = Model()
+
+    machine = model.add_machine()
+    model.add_renewable(2)
+    task1 = model.add_task()
+    task2 = model.add_task()
+    model.add_mode(task1, machine, 1)
+    model.add_mode(task2, machine, 1)
+    model.add_end_before_start(task1, task2)
+
+    expected = (
+        "0 jobs\n"
+        "2 resources\n"
+        "├─ 1 machines\n"
+        "└─ 1 renewable\n"
+        "2 tasks\n"
+        "2 modes\n"
+        "1 constraints\n"
+        "└─ 1 end_before_start\n"
+        "objective\n"
+        "└─ weight_makespan=1"
+    )
+    assert_equal(model.summary(), expected)
 
 
 def test_solve(solver: str):

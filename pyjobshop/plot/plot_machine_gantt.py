@@ -49,33 +49,52 @@ def plot_machine_gantt(
         if task.job is not None:
             task2color[idx] = colors[task.job % len(colors)]
 
-    for idx, task_data in enumerate(solution.tasks):
+    for idx, sol_task in enumerate(solution.tasks):
         kwargs = {
             "color": task2color[idx],
             "linewidth": 1,
             "edgecolor": "black",
             "alpha": 0.75,
         }
-        duration = task_data.end - task_data.start
-        for resource in task_data.resources:
-            if resource not in resources:
+        for res_idx in sol_task.resources:
+            if res_idx not in resources:
                 continue  # skip resources not in the order
 
             ax.barh(
-                resources.index(resource),
-                duration,
-                left=task_data.start,
+                resources.index(res_idx),
+                sol_task.duration,
+                left=sol_task.start,
                 **kwargs,
             )
 
             if plot_labels:
                 ax.text(
-                    task_data.start + duration / 2,
-                    resources.index(resource),
+                    sol_task.start + sol_task.duration / 2,
+                    resources.index(res_idx),
                     data.tasks[idx].name or f"{idx}",
                     ha="center",
                     va="center",
                 )
+
+    break_labeled = False
+    for res_idx in resources:
+        resource = data.resources[res_idx]
+        if not hasattr(resource, "breaks"):
+            continue
+
+        for start, end in resource.breaks:
+            ax.barh(
+                resources.index(res_idx),
+                end - start,
+                left=start,
+                color="red",
+                alpha=0.1,
+                hatch="///",
+                edgecolor="darkred",
+                linewidth=0.1,
+                label="Break" if not break_labeled else None,
+            )
+            break_labeled = True
 
     labels = [
         data.resources[idx].name or f"Machine {idx}" for idx in resources
@@ -87,3 +106,6 @@ def plot_machine_gantt(
     ax.set_xlim(0, ax.get_xlim()[1])  # start time at zero
     ax.set_xlabel("Time")
     ax.set_title("Solution")
+
+    if break_labeled:
+        ax.legend(loc="best")

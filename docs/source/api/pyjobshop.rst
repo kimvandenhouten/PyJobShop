@@ -24,7 +24,7 @@ PyJobShop
     .. autoclass:: Renewable
        :members:
 
-    .. autoclass:: NonRenewable
+    .. autoclass:: Consumable
        :members:
 
     .. autoclass:: Task
@@ -33,32 +33,39 @@ PyJobShop
     .. autoclass:: Mode
        :members:
 
-    .. autoclass:: Constraints
-        :members:
-
     .. autoclass:: StartBeforeStart
-        :exclude-members: count, index
 
     .. autoclass:: StartBeforeEnd
-        :exclude-members: count, index
 
     .. autoclass:: EndBeforeStart
-        :exclude-members: count, index
 
     .. autoclass:: EndBeforeEnd
-        :exclude-members: count, index
 
     .. autoclass:: IdenticalResources
-        :exclude-members: count, index
 
     .. autoclass:: DifferentResources
-        :exclude-members: count, index
 
     .. autoclass:: Consecutive
-        :exclude-members: count, index
+
+    .. autoclass:: SameSequence
+       :exclude-members: tasks1, tasks2
 
     .. autoclass:: SetupTime
-        :exclude-members: count, index
+
+    .. autoclass:: ModeDependency
+
+    .. autoclass:: SelectAllOrNone
+       :exclude-members: condition_task
+
+    .. autoclass:: SelectAtLeastOne
+       :exclude-members: condition_task
+
+    .. autoclass:: SelectExactlyOne
+       :exclude-members: condition_task
+
+    .. autoclass:: Constraints
+       :exclude-members: __len__
+       :members:
 
     .. autoclass:: ModeDependency
         :exclude-members: count, index
@@ -76,8 +83,34 @@ PyJobShop
 
    .. autoclass:: Result
 
-   .. autoclass:: SolveStatus
+   .. class:: SolveStatus
 
+      Enum representing the termination status of the solver run.
+
+      .. attribute:: OPTIMAL
+         :value: "Optimal"
+
+         Solution is proven optimal.
+
+      .. attribute:: FEASIBLE
+         :value: "Feasible"
+
+         A feasible solution was found.
+
+      .. attribute:: INFEASIBLE
+         :value: "Infeasible"
+
+         Problem is proven infeasible.
+
+      .. attribute:: TIME_LIMIT
+         :value: "Time-limit"
+
+         Solver terminated due to time limit.
+
+      .. attribute:: UNKNOWN
+         :value: "Unknown"
+
+         Solver terminated with unknown status.
 
 .. automodule:: pyjobshop.solve
    :members:

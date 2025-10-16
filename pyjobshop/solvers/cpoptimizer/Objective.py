@@ -2,8 +2,8 @@ import docplex.cp.modeler as cpo
 from docplex.cp.model import CpoExpr, CpoModel
 
 import pyjobshop.solvers.utils as utils
-from pyjobshop.ProblemData import Machine, ProblemData
-from pyjobshop.ProblemData import Objective as DataObjective
+from pyjobshop.ProblemData import Objective as ObjectiveData
+from pyjobshop.ProblemData import ProblemData
 
 from .Variables import Variables
 
@@ -85,34 +85,21 @@ class Objective:
         ]
         return cpo.max(tardiness)  # type: ignore
 
-    def _max_lateness_expr(self) -> CpoExpr:
-        """
-        Returns an expression representing the maximum lateness of jobs.
-        """
-        lateness = [
-            job.weight * (cpo.end_of(var) - job.due_date)
-            for job, var in zip(self._data.jobs, self._job_vars)
-        ]
-        return cpo.max(lateness)  # type: ignore
-
     def _total_setup_time_expr(self) -> CpoExpr:
         """
         Returns an expression representing the total setup times.
         """
         data = self._data
-        resource2modes = utils.resource2modes(data)
         total = []
 
-        for res_idx, resource in enumerate(data.resources):
-            if not isinstance(resource, Machine):
-                continue
-
+        for res_idx in data.machine_idcs:
             if (setup_times := utils.setup_times_matrix(data)) is None:
                 continue
 
             seq_var = self._sequence_vars[res_idx]
             intervals = seq_var.get_interval_variables()
-            task_idcs = [data.modes[m].task for m in resource2modes[res_idx]]
+            resource_modes = data.resource2modes(res_idx)
+            task_idcs = [data.modes[m].task for m in resource_modes]
 
             for idx, interval in enumerate(intervals):
                 # The setup time for the current interval is a variable that
@@ -132,7 +119,7 @@ class Objective:
 
         return cpo.sum(total)  # type: ignore
 
-    def _objective_expr(self, objective: DataObjective) -> CpoExpr:
+    def _objective_expr(self, objective: ObjectiveData) -> CpoExpr:
         """
         Returns the expression corresponding to the given objective.
         """
@@ -143,7 +130,6 @@ class Objective:
             (objective.weight_total_flow_time, self._total_flow_time_expr),
             (objective.weight_total_earliness, self._total_earliness_expr),
             (objective.weight_max_tardiness, self._max_tardiness_expr),
-            (objective.weight_max_lateness, self._max_lateness_expr),
             (objective.weight_total_setup_time, self._total_setup_time_expr),
         ]
         exprs = [weight * expr() for weight, expr in items if weight > 0]

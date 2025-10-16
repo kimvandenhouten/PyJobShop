@@ -4,6 +4,7 @@ from pyjobshop.constants import MAX_VALUE
 from pyjobshop.ProblemData import (
     Consecutive,
     Constraints,
+    Consumable,
     DifferentResources,
     EndBeforeEnd,
     EndBeforeStart,
@@ -12,11 +13,14 @@ from pyjobshop.ProblemData import (
     Machine,
     Mode,
     ModeDependency,
-    NonRenewable,
     Objective,
     ProblemData,
     Renewable,
     Resource,
+    SameSequence,
+    SelectAllOrNone,
+    SelectAtLeastOne,
+    SelectExactlyOne,
     SetupTime,
     StartBeforeEnd,
     StartBeforeStart,
@@ -96,24 +100,30 @@ class Model:
 
         for job in data.jobs:
             model.add_job(
-                weight=job.weight,
-                release_date=job.release_date,
-                deadline=job.deadline,
-                due_date=job.due_date,
+                job.weight,
+                job.release_date,
+                job.deadline,
+                job.due_date,
                 name=job.name,
             )
 
         for resource in data.resources:
             if isinstance(resource, Machine):
-                model.add_machine(name=resource.name)
-            elif isinstance(resource, Renewable):
-                model.add_renewable(
-                    capacity=resource.capacity,
+                model.add_machine(
+                    resource.breaks,
+                    resource.no_idle,
                     name=resource.name,
                 )
-            elif isinstance(resource, NonRenewable):
-                model.add_non_renewable(
-                    capacity=resource.capacity,
+            elif isinstance(resource, Renewable):
+                model.add_renewable(
+                    resource.capacity,
+                    resource.breaks,
+                    name=resource.name,
+                )
+            elif isinstance(resource, Consumable):
+                model.add_consumable(
+                    resource.capacity,
+                    resource.breaks,
                     name=resource.name,
                 )
             else:
@@ -121,23 +131,27 @@ class Model:
 
         for task in data.tasks:
             model.add_task(
-                job=model.jobs[task.job] if task.job is not None else None,
-                earliest_start=task.earliest_start,
-                latest_start=task.latest_start,
-                earliest_end=task.earliest_end,
-                latest_end=task.latest_end,
-                fixed_duration=task.fixed_duration,
+                model.jobs[task.job] if task.job is not None else None,
+                task.earliest_start,
+                task.latest_start,
+                task.earliest_end,
+                task.latest_end,
+                task.allow_idle,
+                task.allow_breaks,
+                task.optional,
                 name=task.name,
             )
 
         for mode in data.modes:
             model.add_mode(
-                task=model.tasks[mode.task],
-                resources=[model.resources[res] for res in mode.resources],
-                duration=mode.duration,
-                demands=mode.demands,
+                model.tasks[mode.task],
+                [model.resources[res] for res in mode.resources],
+                mode.duration,
+                mode.demands,
+                name=mode.name,
             )
 
+        resources = model.resources
         tasks = model.tasks
 
         for idx1, idx2, delay in data.constraints.start_before_start:
@@ -161,12 +175,44 @@ class Model:
         for idx1, idx2 in data.constraints.consecutive:
             model.add_consecutive(tasks[idx1], tasks[idx2])
 
+        for idcs in data.constraints.same_sequence:
+            res_idx1, res_idx2, task_idcs1, task_idcs2 = idcs
+            model.add_same_sequence(
+                resources[res_idx1],
+                resources[res_idx2],
+                [tasks[idx] for idx in task_idcs1] if task_idcs1 else None,
+                [tasks[idx] for idx in task_idcs2] if task_idcs2 else None,
+            )
+
         for res_idx, idx1, idx2, duration in data.constraints.setup_times:
             model.add_setup_time(
-                machine=model.resources[res_idx],  # type: ignore
+                machine=resources[res_idx],  # type: ignore
                 task1=tasks[idx1],
                 task2=tasks[idx2],
                 duration=duration,
+            )
+
+        for mode1, modes2 in data.constraints.mode_dependencies:
+            model.add_mode_dependency(
+                model.modes[mode1], [model.modes[m] for m in modes2]
+            )
+
+        for idcs, condition_idx in data.constraints.select_all_or_none:
+            model.add_select_all_or_none(
+                [tasks[idx] for idx in idcs],
+                tasks[condition_idx] if condition_idx is not None else None,
+            )
+
+        for idcs, condition_idx in data.constraints.select_at_least_one:
+            model.add_select_at_least_one(
+                [tasks[idx] for idx in idcs],
+                tasks[condition_idx] if condition_idx is not None else None,
+            )
+
+        for idcs, condition_idx in data.constraints.select_exactly_one:
+            model.add_select_exactly_one(
+                [tasks[idx] for idx in idcs],
+                tasks[condition_idx] if condition_idx is not None else None,
             )
 
         model.set_objective(
@@ -176,7 +222,6 @@ class Model:
             weight_total_flow_time=data.objective.weight_total_flow_time,
             weight_total_earliness=data.objective.weight_total_earliness,
             weight_max_tardiness=data.objective.weight_max_tardiness,
-            weight_max_lateness=data.objective.weight_max_lateness,
             weight_total_setup_time=data.objective.weight_total_setup_time,
         )
 
@@ -201,6 +246,7 @@ class Model:
         release_date: int = 0,
         deadline: int = MAX_VALUE,
         due_date: int | None = None,
+        *,
         name: str = "",
     ) -> Job:
         """
@@ -213,33 +259,51 @@ class Model:
 
         return job
 
-    def add_machine(self, name: str = "") -> Machine:
+    def add_machine(
+        self,
+        breaks: list[tuple[int, int]] | None = None,
+        no_idle: bool = False,
+        *,
+        name: str = "",
+    ) -> Machine:
         """
         Adds a machine to the model.
         """
-        machine = Machine(name=name)
+        machine = Machine(breaks, no_idle, name=name)
 
         self._id2resource[id(machine)] = len(self.resources)
         self._resources.append(machine)
 
         return machine
 
-    def add_renewable(self, capacity: int, name: str = "") -> Renewable:
+    def add_renewable(
+        self,
+        capacity: int,
+        breaks: list[tuple[int, int]] | None = None,
+        *,
+        name: str = "",
+    ) -> Renewable:
         """
         Adds a renewable resource to the model.
         """
-        resource = Renewable(capacity=capacity, name=name)
+        resource = Renewable(capacity, breaks, name=name)
 
         self._id2resource[id(resource)] = len(self.resources)
         self._resources.append(resource)
 
         return resource
 
-    def add_non_renewable(self, capacity: int, name: str = "") -> NonRenewable:
+    def add_consumable(
+        self,
+        capacity: int,
+        breaks: list[tuple[int, int]] | None = None,
+        *,
+        name: str = "",
+    ) -> Consumable:
         """
-        Adds a non-renewable resource to the model.
+        Adds a consumable resource to the model.
         """
-        resource = NonRenewable(capacity=capacity, name=name)
+        resource = Consumable(capacity, breaks, name=name)
 
         self._id2resource[id(resource)] = len(self.resources)
         self._resources.append(resource)
@@ -253,7 +317,10 @@ class Model:
         latest_start: int = MAX_VALUE,
         earliest_end: int = 0,
         latest_end: int = MAX_VALUE,
-        fixed_duration: bool = True,
+        allow_idle: bool = False,
+        allow_breaks: bool = False,
+        optional: bool = False,
+        *,
         name: str = "",
     ) -> Task:
         """
@@ -266,8 +333,10 @@ class Model:
             latest_start,
             earliest_end,
             latest_end,
-            fixed_duration,
-            name,
+            allow_idle,
+            allow_breaks,
+            optional,
+            name=name,
         )
 
         task_idx = len(self.tasks)
@@ -285,11 +354,13 @@ class Model:
         resources: Resource | Sequence[Resource],
         duration: int,
         demands: int | list[int] | None = None,
+        *,
+        name: str = "",
     ) -> Mode:
         """
         Adds a processing mode to the model.
         """
-        if isinstance(resources, (Machine, Renewable, NonRenewable)):
+        if isinstance(resources, (Machine, Renewable, Consumable)):
             resources = [resources]
 
         if isinstance(demands, int):
@@ -297,7 +368,7 @@ class Model:
 
         task_idx = self._id2task[id(task)]
         resource_idcs = [self._id2resource[id(res)] for res in resources]
-        mode = Mode(task_idx, resource_idcs, duration, demands)
+        mode = Mode(task_idx, resource_idcs, duration, demands, name=name)
 
         self._id2mode[id(mode)] = len(self.modes)
         self._modes.append(mode)
@@ -394,6 +465,29 @@ class Model:
 
         return constraint
 
+    def add_same_sequence(
+        self,
+        machine1: Machine,
+        machine2: Machine,
+        tasks1: list[Task] | None = None,
+        tasks2: list[Task] | None = None,
+    ) -> SameSequence:
+        """
+        Adds a constraint that requires the two machines to schedule its tasks
+        in the same sequence.
+        """
+        res_idx1 = self._id2resource[id(machine1)]
+        res_idx2 = self._id2resource[id(machine2)]
+        constraint = SameSequence(
+            res_idx1,
+            res_idx2,
+            [self._id2task[id(task)] for task in tasks1] if tasks1 else None,
+            [self._id2task[id(task)] for task in tasks2] if tasks2 else None,
+        )
+        self._constraints.same_sequence.append(constraint)
+
+        return constraint
+
     def add_setup_time(
         self, machine: Machine, task1: Task, task2: Task, duration: int
     ) -> SetupTime:
@@ -405,7 +499,7 @@ class Model:
         task_idx2 = self._id2task[id(task2)]
 
         constraint = SetupTime(machine_idx, task_idx1, task_idx2, duration)
-        self._constraints._setup_times.append(constraint)
+        self._constraints.setup_times.append(constraint)
 
         return constraint
 
@@ -424,6 +518,57 @@ class Model:
 
         return constraint
 
+    def add_select_all_or_none(
+        self, tasks: list[Task], condition_task: Task | None = None
+    ) -> SelectAllOrNone:
+        """
+        Adds a constraint that all tasks from the given list are selected,
+        or none are. If ``condition_task`` is provided, this rule only
+        applies when that task is selected.
+        """
+        idcs = [self._id2task[id(task)] for task in tasks]
+        condition_idx = (
+            self._id2task[id(condition_task)] if condition_task else None
+        )
+        constraint = SelectAllOrNone(idcs, condition_idx)
+        self._constraints.select_all_or_none.append(constraint)
+
+        return constraint
+
+    def add_select_at_least_one(
+        self, tasks: list[Task], condition_task: Task | None = None
+    ) -> SelectAtLeastOne:
+        """
+        Adds a constraint that at least one task from the given list is
+        selected. If ``condition_task`` is provided, this rule only applies
+        when that task is selected.
+        """
+        idcs = [self._id2task[id(task)] for task in tasks]
+        condition_idx = (
+            self._id2task[id(condition_task)] if condition_task else None
+        )
+        constraint = SelectAtLeastOne(idcs, condition_idx)
+        self._constraints.select_at_least_one.append(constraint)
+
+        return constraint
+
+    def add_select_exactly_one(
+        self, tasks: list[Task], condition_task: Task | None = None
+    ) -> SelectExactlyOne:
+        """
+        Adds a constraint that exactly one task from the given list is
+        selected. If ``condition_task`` is provided, this rule only applies
+        when that task is selected.
+        """
+        idcs = [self._id2task[id(task)] for task in tasks]
+        condition_idx = (
+            self._id2task[id(condition_task)] if condition_task else None
+        )
+        constraint = SelectExactlyOne(idcs, condition_idx)
+        self._constraints.select_exactly_one.append(constraint)
+
+        return constraint
+
     def set_objective(
         self,
         weight_makespan: int = 0,
@@ -432,7 +577,6 @@ class Model:
         weight_total_flow_time: int = 0,
         weight_total_earliness: int = 0,
         weight_max_tardiness: int = 0,
-        weight_max_lateness: int = 0,
         weight_total_setup_time: int = 0,
     ) -> Objective:
         """
@@ -445,10 +589,16 @@ class Model:
             weight_total_flow_time=weight_total_flow_time,
             weight_total_earliness=weight_total_earliness,
             weight_max_tardiness=weight_max_tardiness,
-            weight_max_lateness=weight_max_lateness,
             weight_total_setup_time=weight_total_setup_time,
         )
         return self._objective
+
+    def summary(self) -> str:
+        """
+        Returns a summary of the model, which is the string representation of
+        the ProblemData instance created by the model.
+        """
+        return str(self.data())
 
     def solve(
         self,

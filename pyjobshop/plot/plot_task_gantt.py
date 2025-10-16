@@ -36,17 +36,14 @@ def plot_task_gantt(
         tasks = list(range(len(solution.tasks)))
 
     colors = plt.cm.tab20.colors  # Use a qualitative colormap for task colors
+    present_tasks = [task for task in tasks if solution.tasks[task].present]
 
-    for row_idx, task_idx in enumerate(tasks):
-        task = solution.tasks[task_idx]
-        start = task.start
-        end = task.end
-        duration = task.end - task.start
-
+    for row_idx, task_idx in enumerate(present_tasks):
+        sol_task = solution.tasks[task_idx]
         ax.barh(
             row_idx,
-            duration,
-            left=start,
+            sol_task.duration,
+            left=sol_task.start,
             align="center",
             color=colors[row_idx % len(colors)],
             edgecolor="black",
@@ -55,7 +52,7 @@ def plot_task_gantt(
 
         if plot_labels:
             ax.text(
-                x=(start + end) / 2,
+                x=(sol_task.start + sol_task.end) / 2,
                 y=row_idx + 0.1,
                 s=data.tasks[task_idx].name or f"{task_idx}",
                 va="center",
@@ -64,6 +61,8 @@ def plot_task_gantt(
             )
 
     ax.set_xlim(0, solution.makespan)
+    ax.set_xlabel("Time")
     ax.set_ylabel("Tasks", fontsize=12)
     ax.set_title("Task Gantt Chart", fontsize=14)
+    ax.set_yticks([])
     ax.invert_yaxis()

@@ -1,67 +1,11 @@
 from numpy.testing import assert_equal
 
-from pyjobshop.ProblemData import Job, Mode, ProblemData, Renewable, Task
+from pyjobshop.ProblemData import Mode, ProblemData, Renewable, Task
 from pyjobshop.solvers.utils import (
-    compute_task_durations,
     different_modes,
     identical_modes,
     intersecting_modes,
-    resource2modes,
-    task2modes,
 )
-
-
-def test_compute_task_durations():
-    """
-    Tests that the task durations are correctly computed.
-    """
-    data = ProblemData(
-        [Job(tasks=[0])],
-        [Renewable(0), Renewable(0)],
-        [Task(), Task()],
-        modes=[Mode(0, [0], 1), Mode(0, [1], 10), Mode(1, [1], 0)],
-    )
-
-    task_durations = compute_task_durations(data)
-
-    # First task has processing times 1 and 10, whereas the second task has
-    # only one processing time of 0.
-    assert_equal(task_durations[0], [1, 10])
-    assert_equal(task_durations[1], [0])
-
-
-def test_resource2modes():
-    """
-    Tests that the mode indices corresponding to each resource are correctly
-    computed.
-    """
-    data = ProblemData(
-        [Job(tasks=[0])],
-        [Renewable(0), Renewable(0)],
-        [Task(), Task()],
-        modes=[Mode(0, [0], 1), Mode(0, [1], 10), Mode(1, [1], 0)],
-    )
-
-    mapper = resource2modes(data)
-    assert_equal(mapper[0], [0])
-    assert_equal(mapper[1], [1, 2])
-
-
-def test_task2modes():
-    """
-    Tests that the mode indices corresponding to each task are correctly
-    computed.
-    """
-    data = ProblemData(
-        [Job(tasks=[0])],
-        [Renewable(0), Renewable(0)],
-        [Task(), Task()],
-        modes=[Mode(0, [0], 1), Mode(0, [1], 10), Mode(1, [1], 0)],
-    )
-
-    mapper = task2modes(data)
-    assert_equal(mapper[0], [0, 1])
-    assert_equal(mapper[1], [2])
 
 
 def test_identical_modes():
@@ -69,7 +13,7 @@ def test_identical_modes():
     Tests that the modes with identical resources are correctly computed.
     """
     data = ProblemData(
-        [Job(tasks=[0])],
+        [],
         [Renewable(0), Renewable(0), Renewable(0)],
         [Task(), Task(), Task()],
         [
@@ -103,7 +47,7 @@ def test_different_modes():
     Tests that the modes with different resources are correctly computed.
     """
     data = ProblemData(
-        [Job(tasks=[0])],
+        [],
         [Renewable(0), Renewable(0), Renewable(0)],
         [Task(), Task(), Task()],
         [
@@ -135,7 +79,7 @@ def test_intersecting_modes():
     Tests that the intersecting modes between two tasks are correctly computed.
     """
     data = ProblemData(
-        [Job(tasks=[0])],
+        [],
         [Renewable(0), Renewable(0), Renewable(0)],
         [Task(), Task(), Task()],
         modes=[

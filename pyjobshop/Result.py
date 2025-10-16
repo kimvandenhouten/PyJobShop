@@ -5,6 +5,10 @@ from .Solution import Solution
 
 
 class SolveStatus(str, Enum):
+    """
+    Enum representing the termination status of the solver run.
+    """
+
     OPTIMAL = "Optimal"
     FEASIBLE = "Feasible"
     INFEASIBLE = "Infeasible"

@@ -1,6 +1,7 @@
-from collections import Counter
+from collections import Counter, defaultdict
 from copy import deepcopy
-from dataclasses import dataclass, fields
+from dataclasses import dataclass, field, fields
+from itertools import pairwise
 from typing import Sequence, TypeVar
 
 from pyjobshop.constants import MAX_VALUE
@@ -16,9 +17,10 @@ class Job:
     ----------
     weight
         The weight of the job, used as multiplicative factor in the
-        objective function. Default ``1``.
+        objective function. Must be non-negative. Default ``1``.
     release_date
-        The earliest time that the job may start. Default ``0``.
+        The earliest time that the job may start. Must be non-negative.
+        Default ``0``.
     deadline
         The latest time by which the job must be completed. Note that a
         deadline is different from a due date; the latter does not restrict
@@ -26,12 +28,18 @@ class Job:
         Default :const:`~pyjobshop.constants.MAX_VALUE`.
     due_date
         The latest time that the job should be completed before incurring
-        penalties. Default ``None``, meaning that there is no due date.
+        penalties. Can be negative to represent past due dates. Default
+        ``None``, meaning that there is no due date.
     tasks
         List of task indices that belong to this job. Default ``None``,
         which initializes an empty list.
     name
         Name of the job.
+
+    Raises
+    ------
+    ValueError
+        If the release date is greater than the deadline.
     """
 
     def __init__(
@@ -41,6 +49,7 @@ class Job:
         deadline: int = MAX_VALUE,
         due_date: int | None = None,
         tasks: list[int] | None = None,
+        *,
         name: str = "",
     ):
         if weight < 0:
@@ -55,15 +64,23 @@ class Job:
         if release_date > deadline:
             raise ValueError("Must have release_date <= deadline.")
 
-        if due_date is not None and due_date < 0:
-            raise ValueError("Due date must be non-negative.")
-
         self._weight = weight
         self._release_date = release_date
         self._deadline = deadline
         self._due_date = due_date
         self._tasks = [] if tasks is None else tasks
         self._name = name
+
+    def __eq__(self, other) -> bool:
+        return (
+            isinstance(other, Job)
+            and self.weight == other.weight
+            and self.release_date == other.release_date
+            and self.deadline == other.deadline
+            and self.due_date == other.due_date
+            and self.tasks == other.tasks
+            and self.name == other.name
+        )
 
     @property
     def weight(self) -> int:
@@ -123,17 +140,74 @@ class Job:
 
 class Machine:
     """
-    A machine resource is a specialized resource that only processes one task
-    at a time and can handle sequencing constraints.
+    A resource that processes tasks only one at a time and can enforce
+    sequencing constraints.
 
     Parameters
     ----------
+    breaks
+        List of time intervals during which tasks cannot be processed. Each
+        break is represented as a tuple ``(start, end)``, where ``start`` must
+        be non-negative and ``start`` must be smaller than ``end``. Default is
+        no breaks.
+    no_idle
+        Whether the machine must operate continuously without idle time between
+        tasks. When ``True``, tasks are scheduled back-to-back with no gaps,
+        except for required setup times. When ``False`` (default), the machine
+        can remain idle between tasks.
     name
         Name of the machine.
+
+    Raises
+    ------
+    ValueError
+        When breaks are specified and ``no_idle=True``.
     """
 
-    def __init__(self, name: str = ""):
+    def __init__(
+        self,
+        breaks: list[tuple[int, int]] | None = None,
+        no_idle: bool = False,
+        *,
+        name: str = "",
+    ):
+        if breaks is not None:
+            for start, end in breaks:
+                if start < 0 or start >= end:
+                    raise ValueError("Break start < 0 or start >= end.")
+
+            for interval1, interval2 in pairwise(sorted(breaks)):
+                if interval1[1] > interval2[0]:
+                    raise ValueError("Break intervals must not overlap.")
+
+        if breaks and no_idle:
+            raise ValueError("Breaks not allowed with no_idle=True.")
+
+        self._breaks = breaks or []
+        self._no_idle = no_idle
         self._name = name
+
+    def __eq__(self, other) -> bool:
+        return (
+            isinstance(other, Machine)
+            and self.breaks == other.breaks
+            and self.no_idle == other.no_idle
+            and self.name == other.name
+        )
+
+    @property
+    def breaks(self) -> list[tuple[int, int]]:
+        """
+        List of time intervals during which tasks cannot be processed.
+        """
+        return self._breaks
+
+    @property
+    def no_idle(self) -> bool:
+        """
+        Whether the machine has no idle time constraints.
+        """
+        return self._no_idle
 
     @property
     def name(self) -> str:
@@ -145,23 +219,51 @@ class Machine:
 
 class Renewable:
     """
-    A renewable resource that replenishes its capacity after each task
-    completion.
+    A resource that replenishes its capacity after each task completion.
 
     Parameters
     ----------
     capacity
-        Capacity of the resource.
+        Capacity of the resource. Must be non-negative.
+    breaks
+        List of time intervals during which tasks cannot be processed. Each
+        break is represented as a tuple ``(start, end)``, where ``start`` must
+        be non-negative and ``start`` must be smaller than ``end``. Default is
+        no breaks.
     name
         Name of the resource.
     """
 
-    def __init__(self, capacity: int, name: str = ""):
+    def __init__(
+        self,
+        capacity: int,
+        breaks: list[tuple[int, int]] | None = None,
+        *,
+        name: str = "",
+    ):
         if capacity < 0:
             raise ValueError("Capacity must be non-negative.")
 
+        if breaks is not None:
+            for start, end in breaks:
+                if start < 0 or start >= end:
+                    raise ValueError("Break start < 0 or start >= end.")
+
+            for interval1, interval2 in pairwise(sorted(breaks)):
+                if interval1[1] > interval2[0]:
+                    raise ValueError("Break intervals must not overlap.")
+
         self._capacity = capacity
+        self._breaks = breaks or []
         self._name = name
+
+    def __eq__(self, other) -> bool:
+        return (
+            isinstance(other, Renewable)
+            and self.capacity == other.capacity
+            and self.breaks == other.breaks
+            and self.name == other.name
+        )
 
     @property
     def capacity(self) -> int:
@@ -171,6 +273,13 @@ class Renewable:
         return self._capacity
 
     @property
+    def breaks(self) -> list[tuple[int, int]]:
+        """
+        List of time intervals during which tasks cannot be processed.
+        """
+        return self._breaks
+
+    @property
     def name(self) -> str:
         """
         Name of the resource.
@@ -178,24 +287,55 @@ class Renewable:
         return self._name
 
 
-class NonRenewable:
+class Consumable:
     """
-    A non-renewable resource that does not replenish its capacity.
+    A resource with finite capacity that is permanently consumed by tasks.
+    Unlike renewable resources, consumed capacity is never replenished during
+    the scheduling horizon.
 
     Parameters
     ----------
     capacity
-        Capacity of the resource.
+        Capacity of the resource. Must be non-negative.
+    breaks
+        List of time intervals during which tasks cannot be processed. Each
+        break is represented as a tuple ``(start, end)``, where ``start`` must
+        be non-negative and ``start`` must be smaller than ``end``. Default is
+        no breaks.
     name
         Name of the resource.
     """
 
-    def __init__(self, capacity: int, name: str = ""):
+    def __init__(
+        self,
+        capacity: int,
+        breaks: list[tuple[int, int]] | None = None,
+        *,
+        name: str = "",
+    ):
         if capacity < 0:
             raise ValueError("Capacity must be non-negative.")
 
+        if breaks is not None:
+            for start, end in breaks:
+                if start < 0 or start >= end:
+                    raise ValueError("Break start < 0 or start >= end.")
+
+            for interval1, interval2 in pairwise(sorted(breaks)):
+                if interval1[1] > interval2[0]:
+                    raise ValueError("Break intervals must not overlap.")
+
         self._capacity = capacity
+        self._breaks = breaks or []
         self._name = name
+
+    def __eq__(self, other) -> bool:
+        return (
+            isinstance(other, Consumable)
+            and self.capacity == other.capacity
+            and self.breaks == other.breaks
+            and self.name == other.name
+        )
 
     @property
     def capacity(self) -> int:
@@ -205,6 +345,13 @@ class NonRenewable:
         return self._capacity
 
     @property
+    def breaks(self) -> list[tuple[int, int]]:
+        """
+        List of time intervals during which tasks cannot be processed.
+        """
+        return self._breaks
+
+    @property
     def name(self) -> str:
         """
         Name of the resource.
@@ -212,7 +359,7 @@ class NonRenewable:
         return self._name
 
 
-Resource = Machine | Renewable | NonRenewable
+Resource = Machine | Renewable | Consumable
 
 
 class Task:
@@ -234,12 +381,16 @@ class Task:
     latest_end
         Latest end time of the task.
         Default :const:`~pyjobshop.constants.MAX_VALUE`.
-    fixed_duration
-        Whether the task has a fixed duration. A fixed duration means that
-        the task duration is precisely the processing time (on a given
-        resource). If the duration is not fixed, then the task duration
-        can take longer than the processing time, e.g., due to blocking.
-        Default ``True``.
+    allow_idle
+        Whether the task can remain idle after completing its processing.
+        If ``True``, the task can continue occupying resources after
+        finishing (e.g., blocking in flow shops). Default ``False``.
+    allow_breaks
+        Whether the task can be interrupted by resource breaks. If
+        ``True``, the task stops processing during breaks and resumes
+        afterwards. Default ``False``.
+    optional
+        Whether the task is optional. Default ``False``.
     name
         Name of the task.
     """
@@ -251,7 +402,10 @@ class Task:
         latest_start: int = MAX_VALUE,
         earliest_end: int = 0,
         latest_end: int = MAX_VALUE,
-        fixed_duration: bool = True,
+        allow_idle: bool = False,
+        allow_breaks: bool = False,
+        optional: bool = False,
+        *,
         name: str = "",
     ):
         if earliest_start > latest_start:
@@ -265,8 +419,24 @@ class Task:
         self._latest_start = latest_start
         self._earliest_end = earliest_end
         self._latest_end = latest_end
-        self._fixed_duration = fixed_duration
+        self._allow_idle = allow_idle
+        self._allow_breaks = allow_breaks
+        self._optional = optional
         self._name = name
+
+    def __eq__(self, other) -> bool:
+        return (
+            isinstance(other, Task)
+            and self.job == other.job
+            and self.earliest_start == other.earliest_start
+            and self.latest_start == other.latest_start
+            and self.earliest_end == other.earliest_end
+            and self.latest_end == other.latest_end
+            and self.allow_idle == other.allow_idle
+            and self.allow_breaks == other.allow_breaks
+            and self.optional == other.optional
+            and self.name == other.name
+        )
 
     @property
     def job(self) -> int | None:
@@ -305,11 +475,25 @@ class Task:
         return self._latest_end
 
     @property
-    def fixed_duration(self) -> bool:
+    def allow_idle(self) -> bool:
         """
-        Whether the task has a fixed duration.
+        Whether the task can have idle time.
         """
-        return self._fixed_duration
+        return self._allow_idle
+
+    @property
+    def allow_breaks(self) -> bool:
+        """
+        Whether the task can be interrupted by breaks.
+        """
+        return self._allow_breaks
+
+    @property
+    def optional(self) -> bool:
+        """
+        Whether the task is optional.
+        """
+        return self._optional
 
     @property
     def name(self) -> str:
@@ -328,13 +512,20 @@ class Mode:
     task
         Task index that this mode belongs to.
     resources
-        List of resources that are required for this mode.
+        List of unique resources that are required for this mode.
     duration
-        Processing duration of this mode.
+        Processing duration of this mode. Must be non-negative.
     demands
-        Optional list of demands for each resource for this mode. If ``None``
-        is given, then the demands are initialized as list of zeros with the
-        same length as the resources.
+        Optional list of demands for each resource for this mode. Demands must
+        be non-negative. If set to ``None``, then the demands are initialized
+        as list of zeros with the same length as the resources.
+    name
+        Name of the mode.
+
+    Raises
+    ------
+    ValueError
+        If the length of resources and demands do not match.
     """
 
     def __init__(
@@ -343,6 +534,8 @@ class Mode:
         resources: list[int],
         duration: int,
         demands: list[int] | None = None,
+        *,
+        name: str = "",
     ):
         if len(set(resources)) != len(resources):
             raise ValueError("Mode resources must be unique.")
@@ -361,6 +554,17 @@ class Mode:
         self._resources = resources
         self._duration = duration
         self._demands = demands
+        self._name = name
+
+    def __eq__(self, other) -> bool:
+        return (
+            isinstance(other, Mode)
+            and self.task == other.task
+            and self.resources == other.resources
+            and self.duration == other.duration
+            and self.demands == other.demands
+            and self.name == other.name
+        )
 
     @property
     def task(self) -> int:
@@ -378,13 +582,9 @@ class Mode:
     def demands(self) -> list[int]:
         return self._demands
 
-    def __eq__(self, other) -> bool:
-        return (
-            self.task == other.task
-            and self.resources == other.resources
-            and self.duration == other.duration
-            and self.demands == other.demands
-        )
+    @property
+    def name(self) -> str:
+        return self._name
 
 
 class IterableMixin:
@@ -394,7 +594,7 @@ class IterableMixin:
     """
 
     def __iter__(self):
-        return iter(getattr(self, field.name) for field in fields(self))
+        return iter(getattr(self, f.name) for f in fields(self))
 
 
 @dataclass
@@ -514,6 +714,50 @@ class Consecutive(IterableMixin):
 
 
 @dataclass
+class SameSequence(IterableMixin):
+    """
+    Ensures that two machines process their assigned tasks in the same relative
+    order. Both machines must have the same number of assigned tasks for this
+    constraint to be valid.
+
+    When ``tasks1`` and ``tasks2`` are not specified, the constraint applies to
+    all tasks assigned to each machine, with ordering determined by their task
+    indices in ascending order. For explicit control over the task sequence,
+    use the ``tasks1`` and ``tasks2`` parameters.
+
+    Example
+    -------
+    Assume that machine 1 can process tasks [1, 3] and machine 2 can process
+    tasks [2, 4]. The default (by task indices) allows the following valid
+    sequences:
+
+    * (1→3, 2→4) or (3→1, 4→2)
+
+    If passing arguments ``tasks1=[1, 3]`` and ``tasks2=[4, 2]``, then the
+    following sequences are valid:
+
+    * (1→3, 4→2) or (3→1, 2→4)
+    """
+
+    machine1: int
+    machine2: int
+    tasks1: list[int] | None = None
+    tasks2: list[int] | None = None
+
+    def __post_init__(self):
+        if self.tasks1 is not None and self.tasks2 is not None:
+            if len(self.tasks1) != len(self.tasks2):
+                msg = "tasks1 and tasks2 must be same length."
+                raise ValueError(msg)
+
+            if len(set(self.tasks1)) != len(self.tasks1):
+                raise ValueError("tasks1 contains duplicate values.")
+
+            if len(set(self.tasks2)) != len(self.tasks2):
+                raise ValueError("tasks2 contains duplicate values.")
+
+
+@dataclass
 class SetupTime(IterableMixin):
     """
     Sequence-dependent setup time between task 1 and task 2 on the given
@@ -528,6 +772,9 @@ class SetupTime(IterableMixin):
 
     where :math:`d` is the setup time duration. Note that this also implies
     an end-before-start relationship between task 1 and task 2.
+
+    When using :attr:`Machine.breaks`, setup times are allowed to take place
+    during the breaks.
     """
 
     machine: int
@@ -535,16 +782,20 @@ class SetupTime(IterableMixin):
     task2: int
     duration: int
 
+    def __post_init__(self):
+        if self.duration < 0:
+            raise ValueError("Setup time must be non-negative.")
+
 
 @dataclass
 class ModeDependency(IterableMixin):
     """
-    Represents a dependency between task modes: if `mode1` is selected,
-    then at least one of the modes in `modes2` must also be selected.
+    Represents a dependency between task modes: if mode 1 is selected,
+    then at least one of the modes in modes 2 must also be selected.
 
-    Let :math:`m_1` be the Boolean variable indicating whether `mode1` is
+    Let :math:`m_1` be the Boolean variable indicating whether mode 1 is
     selected. Let :math:`M_2` be the set of Boolean variables corresponding
-    to the modes in `modes2`.
+    to the modes in modes 2.
 
     The constraint is then expressed as:
 
@@ -555,167 +806,131 @@ class ModeDependency(IterableMixin):
     mode1: int
     modes2: list[int]
 
+    def __post_init__(self):
+        if len(self.modes2) == 0:
+            raise ValueError("At least one mode in modes2 must be specified.")
 
+
+@dataclass
+class SelectAllOrNone(IterableMixin):
+    """
+    Enforces that all tasks from the given list are selected, or none are.
+
+    If ``condition_task`` is provided, this rule only applies when that task
+    is selected; otherwise, it has no effect.
+    """
+
+    tasks: list[int]
+    condition_task: int | None = None
+
+
+@dataclass
+class SelectAtLeastOne(IterableMixin):
+    """
+    Enforces that at least one task from the given list is selected.
+
+    If ``condition_task`` is provided, this rule only applies when that task
+    is selected; otherwise, it has no effect.
+    """
+
+    tasks: list[int]
+    condition_task: int | None = None
+
+
+@dataclass
+class SelectExactlyOne(IterableMixin):
+    """
+    Enforces that exactly one task from the given list is selected.
+
+    If ``condition_task`` is provided, this rule only applies when that task
+    is selected; otherwise, it has no effect.
+    """
+
+    tasks: list[int]
+    condition_task: int | None = None
+
+
+@dataclass
 class Constraints:
     """
-    Container class for storing all constraints.
+    Simple container class for storing all constraints.
     """
 
-    def __init__(
-        self,
-        start_before_start: list[StartBeforeStart] | None = None,
-        start_before_end: list[StartBeforeEnd] | None = None,
-        end_before_start: list[EndBeforeStart] | None = None,
-        end_before_end: list[EndBeforeEnd] | None = None,
-        identical_resources: list[IdenticalResources] | None = None,
-        different_resources: list[DifferentResources] | None = None,
-        consecutive: list[Consecutive] | None = None,
-        setup_times: list[SetupTime] | None = None,
-        mode_dependencies: list[ModeDependency] | None = None,
-    ):
-        self._start_before_start = start_before_start or []
-        self._start_before_end = start_before_end or []
-        self._end_before_start = end_before_start or []
-        self._end_before_end = end_before_end or []
-        self._identical_resources = identical_resources or []
-        self._different_resources = different_resources or []
-        self._consecutive = consecutive or []
-        self._setup_times = setup_times or []
-        self._mode_dependencies = mode_dependencies or []
-
-    def __eq__(self, other) -> bool:
-        return (
-            self.start_before_start == other.start_before_start
-            and self.start_before_end == other.start_before_end
-            and self.end_before_start == other.end_before_start
-            and self.end_before_end == other.end_before_end
-            and self.identical_resources == other.identical_resources
-            and self.different_resources == other.different_resources
-            and self.consecutive == other.consecutive
-            and self.setup_times == other.setup_times
-            and self.mode_dependencies == other.mode_dependencies
-        )
+    start_before_start: list[StartBeforeStart] = field(default_factory=list)
+    start_before_end: list[StartBeforeEnd] = field(default_factory=list)
+    end_before_start: list[EndBeforeStart] = field(default_factory=list)
+    end_before_end: list[EndBeforeEnd] = field(default_factory=list)
+    identical_resources: list[IdenticalResources] = field(default_factory=list)
+    different_resources: list[DifferentResources] = field(default_factory=list)
+    consecutive: list[Consecutive] = field(default_factory=list)
+    same_sequence: list[SameSequence] = field(default_factory=list)
+    setup_times: list[SetupTime] = field(default_factory=list)
+    mode_dependencies: list[ModeDependency] = field(default_factory=list)
+    select_all_or_none: list[SelectAllOrNone] = field(default_factory=list)
+    select_at_least_one: list[SelectAtLeastOne] = field(default_factory=list)
+    select_exactly_one: list[SelectExactlyOne] = field(default_factory=list)
 
     def __len__(self) -> int:
-        return (
-            len(self.start_before_start)
-            + len(self.start_before_end)
-            + len(self.end_before_start)
-            + len(self.end_before_end)
-            + len(self.identical_resources)
-            + len(self.different_resources)
-            + len(self.consecutive)
-            + len(self._setup_times)
-            + len(self._mode_dependencies)
-        )
+        """
+        Returns the total number of constraints across all types.
+        """
+        return sum(len(getattr(self, f.name)) for f in fields(self))
 
-    @property
-    def start_before_start(self) -> list[StartBeforeStart]:
-        """
-        Returns the list of start-before-start constraints.
-        """
-        return self._start_before_start
+    def __str__(self) -> str:
+        parts = []
+        for f in fields(self):
+            count = len(getattr(self, f.name))
+            if count > 0:
+                parts.append(f"{count} {f.name}")
 
-    @property
-    def start_before_end(self) -> list[StartBeforeEnd]:
-        """
-        Returns the list of start-before-end constraints.
-        """
-        return self._start_before_end
+        lines = [f"{len(self)} constraints"]
+        for idx, part in enumerate(parts):
+            symbol = "└─" if idx == len(parts) - 1 else "├─"
+            lines.append(f"{symbol} {part}")
 
-    @property
-    def end_before_start(self) -> list[EndBeforeStart]:
-        """
-        Returns the list of end-before-start constraints.
-        """
-        return self._end_before_start
-
-    @property
-    def end_before_end(self) -> list[EndBeforeEnd]:
-        """
-        Returns the list of end-before-end constraints.
-        """
-        return self._end_before_end
-
-    @property
-    def identical_resources(self) -> list[IdenticalResources]:
-        """
-        Returns the list of identical resources constraints.
-        """
-        return self._identical_resources
-
-    @property
-    def different_resources(self) -> list[DifferentResources]:
-        """
-        Returns the list of different resources constraints.
-        """
-        return self._different_resources
-
-    @property
-    def consecutive(self) -> list[Consecutive]:
-        """
-        Returns the list of consecutive task constraints.
-        """
-        return self._consecutive
-
-    @property
-    def setup_times(self) -> list[SetupTime]:
-        """
-        Returns the list of setup times constraints.
-        """
-        return self._setup_times
-
-    @property
-    def mode_dependencies(self) -> list[ModeDependency]:
-        """
-        Returns the list of mode dependency constraints.
-        """
-        return self._mode_dependencies
+        return "\n".join(lines)
 
 
 @dataclass
 class Objective:
-    """
+    r"""
     The objective class represents a weighted sum of objective functions :math:`f`, calculated as:
-    :math:`\\sum_f \\text{weight}_f \\cdot \\text{value}_f`. The objective functions :math:`f` are defined below.
+    :math:`\sum_f \text{weight}_f \cdot \text{value}_f` with :math:`\text{weight}_f \ge 0`.
+    The objective functions :math:`f` are defined below.
 
     In the following, let :math:`J` denote the set of jobs, :math:`T` denote the set of tasks,
     :math:`C_j` denote the completion time of job :math:`j`, and :math:`C_t` denote the completion time of
     task :math:`t`.
 
-    **Makespan** (:math:`C_{\\max}`): The finish time of the latest task.
+    **Makespan** (:math:`C_{\max}`): The finish time of the latest task.
         .. math::
-            C_{\\max} = \\max_{t \\in T} C_t
+            C_{\max} = \max_{t \in T} C_t
 
     **Number of tardy jobs** (:math:`NTJ`): The weighted sum of all tardy jobs, where a job is tardy when it does not meet its due date :math:`d_j`.
         .. math::
-            NTJ = \\sum_{j \\in J} w_j \\mathbb{1}_{\\{C_j - d_j > 0\\}}
+            NTJ = \sum_{j \in J} w_j \mathbb{1}_{\{C_j - d_j > 0\}}
 
-    where :math:`\\mathbb{1}_{\\{x\\}}` is the indicator function.
+    where :math:`\mathbb{1}_{\{x\}}` is the indicator function.
 
     **Total flow time** (:math:`TFT`): The weighted sum of the length of stay in the system of each job, from their release date to their completion.
         .. math::
-            TFT = \\sum_{j \\in J} w_j ( C_j - r_j )
+            TFT = \sum_{j \in J} w_j ( C_j - r_j )
 
     **Total tardiness** (:math:`TT`): The weighted sum of the tardiness of each job, where the tardiness is the difference between completion time and due date :math:`d_j` (0 if completed before due date).
         .. math::
-            TT = \\sum_{j \\in J} w_j U_j
+            TT = \sum_{j \in J} w_j U_j
 
     **Total earliness** (:math:`TE`): The weighted sum of the earliness of each job, where earliness is the difference between due date :math:`d_j` and completion time (0 if completed after due date).
         .. math::
-            TE = \\sum_{j \\in J} w_j (\\max(d_j - C_j, 0))
+            TE = \sum_{j \in J} w_j (\max(d_j - C_j, 0))
 
-    **Maximum tardiness** (:math:`U_{\\max}`): The weighted maximum tardiness of all jobs.
+    **Maximum tardiness** (:math:`U_{\max}`): The weighted maximum tardiness of all jobs.
         .. math::
-            U_{\\max} = \\max_{j \\in J} w_j (\\max(C_j - d_j, 0))
+            U_{\max} = \max_{j \in J} w_j (\max(C_j - d_j, 0))
 
-    **Maximum lateness** (:math:`L_{\\max}`): The weighted maximum lateness of all jobs. Lateness can be negative, unlike tardiness.
+    **Total setup time** (:math:`TST`): The sum of all sequence-dependent setup times between consecutive tasks on each machine, where :math:`R` denotes the set of machines, :math:`M^R_r` denotes the set of modes requiring :math:`r \in R`, :math:`s_{t_u, t_v, r}` denotes the setup time between tasks :math:`t_u` and :math:`t_v` on machine :math:`r` and :math:`b_{ruv}` is the binary variable indicating whether task :math:`t_u` is followed by task :math:`t_v` on machine :math:`r`.
         .. math::
-            L_{\\max} = \\max_{j \\in J} w_j (C_j - d_j)
-
-    **Total setup time** (:math:`TST`): The sum of all sequence-dependent setup times between consecutive tasks on each machine, where :math:`R` denotes the set of machines, :math:`M^R_r` denotes the set of modes requiring :math:`r \\in R`, :math:`s_{t_u, t_v, r}` denotes the setup time between tasks :math:`t_u` and :math:`t_v` on machine :math:`r` and :math:`b_{ruv}` is the binary variable indicating whether task :math:`t_u` is followed by task :math:`t_v` on machine :math:`r`.
-        .. math::
-            TST = \\sum_{r \\in R} \\sum_{u, v \\in M^R_r} s_{t_u, t_v, r} b_{ruv}
+            TST = \sum_{r \in R} \sum_{u, v \in M^R_r} s_{t_u, t_v, r} b_{ruv}
 
     .. note::
         Use :attr:`Job.weight` to set a specific job's weight (:math:`w_j`) in the
@@ -728,8 +943,30 @@ class Objective:
     weight_total_tardiness: int = 0
     weight_total_earliness: int = 0
     weight_max_tardiness: int = 0
-    weight_max_lateness: int = 0
     weight_total_setup_time: int = 0
+
+    def __post_init__(self):
+        for f in fields(self):
+            value = getattr(self, f.name)
+            if value < 0:
+                raise ValueError(f"{f.name} < 0 not understood.")
+
+    def __str__(self) -> str:
+        parts = []
+        for f in fields(self):
+            value = getattr(self, f.name)
+            if value > 0:
+                parts.append(f"{f.name}={value}")
+
+        lines = ["objective"]
+        for idx, part in enumerate(parts):
+            symbol = "└─" if idx == len(parts) - 1 else "├─"
+            lines.append(f"{symbol} {part}")
+
+        if not parts:
+            lines.append("└─ no weights")
+
+        return "\n".join(lines)
 
 
 class ProblemData:
@@ -775,40 +1012,110 @@ class ProblemData:
             else Objective(weight_makespan=1)
         )
 
-        self._validate_parameters()
+        self._validate()
 
-    def _validate_parameters(self):
+        # After validation, we can safely set the helper attributes.
+        self._task2modes: list[list[int]] = [[] for _ in tasks]
+        self._task2resources: list[list[int]] = [[] for _ in tasks]
+        self._resource2modes: list[list[int]] = [[] for _ in resources]
+
+        for mode_idx, mode in enumerate(self.modes):
+            self._task2modes[mode.task].append(mode_idx)
+            self._task2resources[mode.task].extend(mode.resources)
+            for res_idx in mode.resources:
+                self._resource2modes[res_idx].append(mode_idx)
+
+        self._task2resources = [sorted(set(v)) for v in self._task2resources]
+
+        self._machine_idcs: list[int] = []
+        self._renewable_idcs: list[int] = []
+        self._consumable_idcs: list[int] = []
+
+        for idx, resource in enumerate(self.resources):
+            if isinstance(resource, Machine):
+                self._machine_idcs.append(idx)
+            elif isinstance(resource, Renewable):
+                self._renewable_idcs.append(idx)
+            elif isinstance(resource, Consumable):
+                self._consumable_idcs.append(idx)
+
+    def __eq__(self, other) -> bool:
+        return (
+            isinstance(other, ProblemData)
+            and self.jobs == other.jobs
+            and self.resources == other.resources
+            and self.tasks == other.tasks
+            and self.modes == other.modes
+            and self.constraints == other.constraints
+            and self.objective == other.objective
+        )
+
+    def __str__(self):
+        lines = [
+            f"{len(self.jobs)} jobs",
+            f"{len(self.resources)} resources",
+        ]
+
+        parts = []
+        if self.num_machines > 0:
+            parts.append(f"{self.num_machines} machines")
+        if self.num_renewables > 0:
+            parts.append(f"{self.num_renewables} renewable")
+        if self.num_consumables > 0:
+            parts.append(f"{self.num_consumables} consumable")
+
+        for idx, part in enumerate(parts):
+            symbol = "└─" if idx == len(parts) - 1 else "├─"
+            lines.append(f"{symbol} {part}")
+
+        lines.extend(
+            [
+                f"{len(self.tasks)} tasks",
+                f"{len(self.modes)} modes",
+                str(self.constraints).rstrip(),
+                str(self.objective).rstrip(),
+            ]
+        )
+
+        return "\n".join(lines)
+
+    def _validate(self):
         """
         Validates the problem data parameters.
         """
-        num_res = self.num_resources
-        num_tasks = self.num_tasks
-
-        for idx, job in enumerate(self.jobs):
+        for job_idx, job in enumerate(self.jobs):
             if len(job.tasks) == 0:
-                msg = f"Job {idx} does not reference any task."
+                msg = f"Job {job_idx} does not reference any task."
                 raise ValueError(msg)
 
-            if any(task < 0 or task >= num_tasks for task in job.tasks):
-                msg = f"Job {idx} references to unknown task index."
-                raise ValueError(msg)
-
-        for idx, task in enumerate(self.tasks):
-            if task.job is not None:
-                if task.job < 0 or task.job >= len(self.jobs):
-                    msg = f"Task {idx} references to unknown job index."
+            for task_idx in job.tasks:
+                if not (0 <= task_idx < self.num_tasks):
+                    msg = f"Job {job_idx} references to unknown task index."
                     raise ValueError(msg)
 
+                if job_idx != self.tasks[task_idx].job:
+                    msg = (
+                        f"Job {job_idx} contains task {task_idx}, but task "
+                        f"belongs to job {self.tasks[task_idx].job}."
+                    )
+                    raise ValueError(msg)
+
+        for idx, task in enumerate(self.tasks):
+            if task.job is not None and not (0 <= task.job < self.num_jobs):
+                msg = f"Task {idx} references to unknown job index."
+                raise ValueError(msg)
+
         for idx, mode in enumerate(self.modes):
-            if mode.task < 0 or mode.task >= num_tasks:
+            if not (0 <= mode.task < self.num_tasks):
                 raise ValueError(f"Mode {idx} references unknown task index.")
 
-            for resource in mode.resources:
-                if resource < 0 or resource >= num_res:
+            for res_idx in mode.resources:
+                if not (0 <= res_idx < self.num_resources):
                     msg = f"Mode {idx} references unknown resource index."
                     raise ValueError(msg)
 
-        missing_tasks = set(range(num_tasks)) - {m.task for m in self.modes}
+        task_set = set(range(self.num_tasks))
+        missing_tasks = task_set - {m.task for m in self.modes}
         for idx in sorted(missing_tasks):
             raise ValueError(f"Processing modes missing for task {idx}.")
 
@@ -828,26 +1135,140 @@ class ProblemData:
                 msg = f"All modes for task {task} have infeasible demands."
                 raise ValueError(msg)
 
-        for res_idx, *_, duration in self.constraints.setup_times:
-            if duration < 0:
-                raise ValueError("Setup time must be non-negative.")
+        task_pair_constraints = [
+            (self.constraints.start_before_start, "start_before_start"),
+            (self.constraints.start_before_end, "start_before_end"),
+            (self.constraints.end_before_start, "end_before_start"),
+            (self.constraints.end_before_end, "end_before_end"),
+            (self.constraints.identical_resources, "identical_resources"),
+            (self.constraints.different_resources, "different_resources"),
+            (self.constraints.consecutive, "consecutive"),
+        ]
 
-            is_machine = isinstance(self.resources[res_idx], Machine)
-            has_setup_times = duration > 0
+        for constraints, name in task_pair_constraints:
+            for idx1, idx2, *_ in constraints:
+                if not (0 <= idx1 < self.num_tasks):
+                    raise ValueError(f"Invalid task index {idx1} in {name}.")
 
-            if not is_machine and has_setup_times:
+                if not (0 <= idx2 < self.num_tasks):
+                    raise ValueError(f"Invalid task index {idx2} in {name}.")
+
+        res2tasks = defaultdict(set)
+        for mode in self.modes:
+            for res_idx in mode.resources:
+                res2tasks[res_idx].add(mode.task)
+
+        same_sequence = self.constraints.same_sequence
+        for res_idx1, res_idx2, task_idcs1, task_idcs2 in same_sequence:
+            if not (0 <= res_idx1 < self.num_resources):
+                msg = f"Invalid resource index {res_idx1} in same_sequence."
+                raise ValueError(msg)
+
+            if not (0 <= res_idx2 < self.num_resources):
+                msg = f"Invalid resource index {res_idx2} in same_sequence."
+                raise ValueError(msg)
+
+            if not isinstance(self.resources[res_idx1], Machine):
+                msg = f"Resource {res_idx1} is not a machine in same_sequence."
+                raise ValueError(msg)
+
+            if not isinstance(self.resources[res_idx2], Machine):
+                msg = f"Resource {res_idx2} is not a machine in same_sequence."
+                raise ValueError(msg)
+
+            res_tasks1 = res2tasks[res_idx1]
+            res_tasks2 = res2tasks[res_idx2]
+
+            if len(res_tasks1) != len(res_tasks2):
+                msg = (
+                    "Machines in same_sequence constraint must handle"
+                    " the same number of tasks."
+                )
+                raise ValueError(msg)
+
+            if task_idcs1 is None and task_idcs2 is None:
+                continue
+
+            for task_idx in task_idcs1:
+                if not (0 <= task_idx < self.num_tasks):
+                    msg = f"Invalid task index {task_idx} in same_sequence."
+                    raise ValueError(msg)
+
+            for task_idx in task_idcs2:
+                if not (0 <= task_idx < self.num_tasks):
+                    msg = f"Invalid task index {task_idx} in same_sequence."
+                    raise ValueError(msg)
+
+            if res_tasks1 != set(task_idcs1):
+                msg = "tasks1 must exactly match tasks that require machine1."
+                raise ValueError(msg)
+
+            if res_tasks2 != set(task_idcs2):
+                msg = "tasks2 must exactly match tasks that require machine2."
+                raise ValueError(msg)
+
+        for res_idx, task_idx1, task_idx2, _ in self.constraints.setup_times:
+            if not (0 <= res_idx < self.num_resources):
+                msg = f"Invalid resource index {res_idx} in setup_times."
+                raise ValueError(msg)
+
+            if not (0 <= task_idx1 < self.num_tasks):
+                msg = f"Invalid task index in setup_times: {task_idx1}."
+                raise ValueError(msg)
+
+            if not (0 <= task_idx2 < self.num_tasks):
+                msg = f"Invalid task index in setup_times: {task_idx2}."
+                raise ValueError(msg)
+
+            if not isinstance(self.resources[res_idx], Machine):
                 raise ValueError("Setup times only allowed for machines.")
+
+        for idx1, idcs2 in self.constraints.mode_dependencies:
+            if not (0 <= idx1 < self.num_modes):
+                msg = f"Invalid mode index {idx1} in mode dependencies."
+                raise ValueError(msg)
+
+            for idx in idcs2:
+                if not (0 <= idx < self.num_modes):
+                    msg = f"Invalid mode index {idx} in mode dependencies."
+                    raise ValueError(msg)
+
+            modes = [idx1, *idcs2]
+            if len({self.modes[idx].task for idx in modes}) == 1:
+                msg = (
+                    f"All modes {modes} in mode dependency constraint"
+                    " refer to the same task."
+                )
+                raise ValueError(msg)
+
+        selection_constraints = [
+            (self.constraints.select_all_or_none, "select_all_or_none"),
+            (self.constraints.select_at_least_one, "select_at_least_one"),
+            (self.constraints.select_exactly_one, "select_exactly_one"),
+        ]
+        for constraints, name in selection_constraints:
+            for idcs1, idx2 in constraints:
+                if not idcs1:
+                    msg = "Task list cannot be empty in select_all_or_none."
+                    raise ValueError(msg)
+
+                for idx in idcs1:
+                    if not (0 <= idx < self.num_tasks):
+                        msg = f"Invalid task index {idx} in {name}."
+                        raise ValueError(msg)
+
+                if idx2 is not None and not (0 <= idx2 < self.num_tasks):
+                    msg = f"Invalid task index {idx2} in {name}."
+                    raise ValueError(msg)
 
         if (
             self.objective.weight_tardy_jobs > 0
             or self.objective.weight_total_tardiness > 0
             or self.objective.weight_total_earliness > 0
             or self.objective.weight_max_tardiness > 0
-            or self.objective.weight_max_lateness > 0
-        ):
-            if any(job.due_date is None for job in self.jobs):
-                msg = "Job due dates required for due date-based objectives."
-                raise ValueError(msg)
+        ) and any(job.due_date is None for job in self.jobs):
+            msg = "Job due dates required for due date-based objectives."
+            raise ValueError(msg)
 
         if (
             self.objective.weight_total_setup_time > 0
@@ -966,6 +1387,27 @@ class ProblemData:
         return len(self._resources)
 
     @property
+    def num_machines(self) -> int:
+        """
+        Returns the number of machines in this instance.
+        """
+        return len(self._machine_idcs)
+
+    @property
+    def num_renewables(self) -> int:
+        """
+        Returns the number of renewable resources in this instance.
+        """
+        return len(self._renewable_idcs)
+
+    @property
+    def num_consumables(self) -> int:
+        """
+        Returns the number of consumable resources in this instance.
+        """
+        return len(self._consumable_idcs)
+
+    @property
     def num_tasks(self) -> int:
         """
         Returns the number of tasks in this instance.
@@ -985,3 +1427,80 @@ class ProblemData:
         Returns the number of constraints in this instance.
         """
         return len(self._constraints)
+
+    @property
+    def machine_idcs(self) -> list[int]:
+        """
+        Returns the list of resource indices corresponding to machines.
+        """
+        return self._machine_idcs
+
+    @property
+    def renewable_idcs(self) -> list[int]:
+        """
+        Returns the list of resource indices corresponding to renewable
+        resources.
+        """
+        return self._renewable_idcs
+
+    @property
+    def consumable_idcs(self) -> list[int]:
+        """
+        Returns the list of resource indices corresponding to consumable
+        resources.
+        """
+        return self._consumable_idcs
+
+    def task2modes(self, task: int) -> list[int]:
+        """
+        Returns the list of mode indices corresponding to the given task.
+
+        Parameters
+        ----------
+        task
+            The task index.
+
+        Returns
+        -------
+        list[int]
+            The list of mode indices for the given task.
+        """
+        if not (0 <= task < self.num_tasks):
+            raise ValueError(f"Invalid task index {task}.")
+        return self._task2modes[task]
+
+    def resource2modes(self, resource: int) -> list[int]:
+        """
+        Returns the list of mode indices corresponding to the given resource.
+
+        Parameters
+        ----------
+        resource
+            The resource index.
+
+        Returns
+        -------
+        list[int]
+            The list of mode indices for the given resource.
+        """
+        if not (0 <= resource < self.num_resources):
+            raise ValueError(f"Invalid resource index {resource}.")
+        return self._resource2modes[resource]
+
+    def task2resources(self, task: int) -> list[int]:
+        """
+        Returns the resource indices that the given task can use.
+
+        Parameters
+        ----------
+        task
+            The task index.
+
+        Returns
+        -------
+        list[int]
+            The list of resource indices for the given task.
+        """
+        if not (0 <= task < self.num_tasks):
+            raise ValueError(f"Invalid task index {task}.")
+        return self._task2resources[task]
