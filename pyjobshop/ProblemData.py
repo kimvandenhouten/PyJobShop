@@ -1,4 +1,6 @@
+import dataclasses
 import json
+import typing
 from collections import Counter, defaultdict
 from copy import deepcopy
 from dataclasses import dataclass, field, fields
@@ -6,7 +8,7 @@ from itertools import pairwise
 from typing import Any, ClassVar, Protocol, Sequence, Sized, TypeVar
 
 from pyjobshop.constants import MAX_VALUE
-from pyjobshop.utils import from_dict, to_dict
+from pyjobshop.utils import from_dict
 
 _T = TypeVar("_T")
 
@@ -148,6 +150,7 @@ class Machine(CheckBreaksMixin):
     breaks: Breaks = ()
     no_idle: bool = False
     name: str = field(default="", kw_only=True)
+    resource_type: str = field(default="Machine", init=False, repr=False)
 
     def __post_init__(self):
         super().__post_init__()
@@ -177,6 +180,7 @@ class Renewable(CheckBreaksMixin, CheckCapacityMixin):
     capacity: int
     breaks: Breaks = ()
     name: str = field(default="", kw_only=True)
+    resource_type: str = field(default="Renewable", init=False, repr=False)
 
     def __post_init__(self):
         super().__post_init__()
@@ -205,12 +209,19 @@ class Consumable(CheckBreaksMixin, CheckCapacityMixin):
     capacity: int
     breaks: Breaks = ()
     name: str = ""
+    resource_type: str = field(default="Consumable", init=False, repr=False)
 
     def __post_init__(self):
         super().__post_init__()
 
 
 Resource = Machine | Renewable | Consumable
+
+
+def resource_filter(cls, _field: dataclasses.Field):
+    if cls in typing.get_args(Resource) and _field.name == "resource_type":
+        return True
+    return _field.init and _field.repr
 
 
 @dataclass(frozen=True)
@@ -779,6 +790,7 @@ class ProblemData:
                 self.renewable_idcs.append(idx)
             elif isinstance(resource, Consumable):
                 self.consumable_idcs.append(idx)
+            # LP TODO flag an error if none of these matches?
 
     @classmethod
     def from_dict(cls, data_dict):
@@ -789,18 +801,16 @@ class ProblemData:
         for resource_dict in data_dict["resources"]:
             # make a copy
             r = dict(resource_dict)
-            typ = r.pop(
-                "type", r.pop("_type", None)
-            )  # support either key name
+            resource_type = r.pop("resource_type", None)
 
-            if typ == "Machine":
+            if resource_type == "Machine":
                 resources.append(Machine(**r))
-            elif typ == "Renewable":
+            elif resource_type == "Renewable":
                 resources.append(Renewable(**r))
-            elif typ == "Consumable":
+            elif resource_type == "Consumable":
                 resources.append(Consumable(**r))
             else:
-                raise ValueError(f"Unknown resource type: {typ!r}")
+                raise ValueError(f"Unknown resource type: {resource_type!r}")
 
         return cls(
             jobs=[Job(**job_params) for job_params in data_dict["jobs"]],
@@ -816,15 +826,6 @@ class ProblemData:
         with open(json_location, "r", encoding="utf-8") as f:
             as_dict = json.load(f)
         return cls.from_dict(as_dict)
-
-    def to_dict(self):
-        return to_dict(self)
-
-    def to_json(self, output_location: str):
-        as_dict = self.to_dict()
-        json_str = json.dumps(as_dict, indent=2)
-        with open(output_location, "w", encoding="utf-8") as f:
-            f.write(json_str)
 
     def __str__(self):
         lines = [

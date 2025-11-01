@@ -146,43 +146,31 @@
       "breaks": [],
       "no_idle": false,
       "name": "",
-      "type": "Machine"
+      "resource_type": "Machine"
     },
     {
       "breaks": [],
       "no_idle": false,
       "name": "",
-      "type": "Machine"
+      "resource_type": "Machine"
     },
     {
       "breaks": [],
       "no_idle": false,
       "name": "",
-      "type": "Machine"
+      "resource_type": "Machine"
     },
     {
       "breaks": [],
       "no_idle": false,
       "name": "",
-      "type": "Machine"
+      "resource_type": "Machine"
     },
     {
       "breaks": [],
       "no_idle": false,
       "name": "",
-      "type": "Machine"
-    },
-    {
-      "capacity": 1,
-      "breaks": [],
-      "name": "",
-      "type": "Renewable"
-    },
-    {
-      "capacity": 1,
-      "breaks": [],
-      "name": "",
-      "type": "Renewable"
+      "resource_type": "Machine"
     }
   ],
   "tasks": [

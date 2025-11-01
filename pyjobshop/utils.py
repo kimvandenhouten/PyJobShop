@@ -1,9 +1,9 @@
+import copy
 import dataclasses
-import inspect
+import json
+import types
 from dataclasses import fields, is_dataclass
-from datetime import date, datetime
-from enum import Enum
-from typing import get_args, get_origin
+from typing import Any, get_args, get_origin
 
 _sentinel = object()
 
@@ -24,101 +24,82 @@ def from_dict(cls, data: dict):
                 if f.default_factory is not dataclasses.MISSING
                 else None
             )
-            continue
-
-        # Handle lists of dataclasses
-        origin = get_origin(field_type)
-        args = () if isinstance(field_type, str) else get_args(field_type)
-        if origin is list and args and is_dataclass(args[0]):
-            inner_type = args[0]
-            kwargs[f.name] = [from_dict(inner_type, v) for v in value]
-        elif is_dataclass(field_type):
-            kwargs[f.name] = from_dict(field_type, value)
         else:
-            kwargs[f.name] = value
+            # Handle lists of dataclasses
+            origin = get_origin(field_type)
+            args = () if isinstance(field_type, str) else get_args(field_type)
+            if origin is list and args and is_dataclass(args[0]):
+                inner_type = args[0]
+                kwargs[f.name] = [from_dict(inner_type, v) for v in value]
+            elif is_dataclass(field_type):
+                kwargs[f.name] = from_dict(field_type, value)
+            else:
+                kwargs[f.name] = value
 
     return cls(**kwargs)
 
 
-def _to_jsonable(v):
-    """
-    Converts a value into a JSON-serializable format.
-
-    Parameters
-    ----------
-    v : Any
-        The value to be converted.
-
-    Returns
-    -------
-    Any
-        A JSON-serializable representation of the input value.
-    """
-    from pyjobshop.ProblemData import Consumable, Machine, Renewable
-
-    if isinstance(v, (Machine, Renewable, Consumable)):
-        as_dict = to_dict(v)
-        as_dict["type"] = v.__class__.__name__
-        return as_dict
-    if isinstance(v, (str, int, float, bool)) or v is None:
-        return v
-    if isinstance(v, (datetime, date)):
-        return v.isoformat()
-    if isinstance(v, Enum):
-        return v.value  # of v.name
-    if isinstance(v, (list, tuple)):
-        return [_to_jsonable(x) for x in v]
-    if isinstance(v, set):
-        return [_to_jsonable(x) for x in v]
-    if isinstance(v, dict):
-        return {str(k): _to_jsonable(vv) for k, vv in v.items()}
-
-    # nested object:
-    try:
-        return to_dict(v)
-    except Exception:
-        return str(v)
+# The following is a verbatim copy of dataclasses._ATOMIC_TYPES in the
+# Python 3.12 source:
+_ATOMIC_TYPES = frozenset(
+    {
+        # Common JSON Serializable types
+        types.NoneType,
+        bool,
+        int,
+        float,
+        str,
+        # Other common types
+        complex,
+        bytes,
+        # Other types that are also unaffected by deepcopy
+        types.EllipsisType,
+        types.NotImplementedType,
+        types.CodeType,
+        types.BuiltinFunctionType,
+        types.FunctionType,
+        type,
+        range,
+        property,
+    }
+)
 
 
-def to_dict(obj, aliases: dict | None = None):
-    """
-    Converts an object into a dictionary of its initialization arguments.
+# The following is heavily based on dataclasses.asdict in the Python 3.12
+# source.  Changes:
+# - remove parameter dict_factory
+# - add parameter field_filter
+def dictify(obj, field_filter=lambda cls, field: True):
+    if type(obj) in _ATOMIC_TYPES:
+        return obj
+    if dataclasses.is_dataclass(obj):
+        # fast path for the common case
+        return {
+            f.name: dictify(getattr(obj, f.name))
+            for f in dataclasses.fields(obj)
+            if field_filter(obj.__class__, f)
+        }
+    if isinstance(obj, tuple) and hasattr(obj, "_fields"):
+        # obj is a namedtuple.  (For more details, consult original Python
+        # source.)
+        return type(obj)(*[dictify(v) for v in obj])
+    if isinstance(obj, (list, tuple)):
+        # Assume we can create an object of this type by passing in a
+        # generator (which is not true for namedtuples, handled
+        # above).
+        return type(obj)(dictify(v) for v in obj)
+    if isinstance(obj, dict):
+        if hasattr(type(obj), "default_factory"):
+            # obj is a defaultdict, which has a different constructor from
+            # dict as it requires the default_factory as its first arg.
+            result = type(obj)(getattr(obj, "default_factory"))
+            for k, v in obj.items():
+                result[dictify(k)] = dictify(v)
+            return result
+        return type(obj)((dictify(k), dictify(v)) for k, v in obj.items())
+    return copy.deepcopy(obj)
 
-    This function inspects the `__init__` method of the object's class and
-    retrieves the values of the parameters used to initialize the object.
-    It supports aliases for parameter names and handles nested objects by
-    converting them into JSON-serializable formats.
 
-    Parameters
-    ----------
-    obj : Any
-        The object to be converted.
-    aliases : dict | None, optional
-        A dictionary mapping parameter names to their aliases, by default None.
-
-    Returns
-    -------
-    dict
-        A dictionary containing the initialization arguments of the object.
-    """
-    aliases = aliases or {}
-    sig = inspect.signature(obj.__class__.__init__)
-    out = {}
-    for name, param in sig.parameters.items():
-        if name == "self" or param.kind in (
-            param.VAR_POSITIONAL,
-            param.VAR_KEYWORD,
-        ):
-            continue
-        val = getattr(obj, name, _sentinel)
-        if val is _sentinel:
-            val = getattr(obj, f"_{name}", _sentinel)
-        if val is _sentinel and name in aliases:
-            alias = aliases[name]
-            val = getattr(obj, alias, _sentinel)
-            if val is _sentinel and alias.startswith("_"):
-                val = getattr(obj, alias.lstrip("_"), _sentinel)
-        if val is _sentinel:
-            continue  # default
-        out[name] = _to_jsonable(val)
-    return out
+def to_json(obj: Any, field_filter=lambda cls, field: True, indent=2) -> str:
+    as_dict = dictify(obj, field_filter)
+    return json.dumps(as_dict, indent=indent)
