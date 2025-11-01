@@ -3,7 +3,7 @@ from collections import Counter, defaultdict
 from copy import deepcopy
 from dataclasses import dataclass, field, fields
 from itertools import pairwise
-from typing import Protocol, Sequence, TypeVar
+from typing import Any, ClassVar, Protocol, Sequence, Sized, TypeVar
 
 from pyjobshop.constants import MAX_VALUE
 from pyjobshop.utils import from_dict, to_dict
@@ -314,13 +314,22 @@ class Mode:
             raise ValueError("resources and demands must have same length.")
 
 
+class DataclassInstance(Protocol):
+    __dataclass_fields__: ClassVar[dict[str, Any]]
+
+
+class SizedDataclassInstance(DataclassInstance, Sized, Protocol):
+    pass
+
+
 class IterableMixin:
     """
     Mixin class for making dataclases iterable (and thus unpackable). This
     makes the implementation of constraints more concise and readable.
     """
 
-    def __iter__(self):
+    def __iter__(self: DataclassInstance):
+        # noinspection PyDataclass
         return iter(getattr(self, f.name) for f in fields(self))
 
 
@@ -597,14 +606,16 @@ class Constraints:
     select_at_least_one: list[SelectAtLeastOne] = field(default_factory=list)
     select_exactly_one: list[SelectExactlyOne] = field(default_factory=list)
 
-    def __len__(self) -> int:
+    def __len__(self: DataclassInstance) -> int:
         """
         Returns the total number of constraints across all types.
         """
+        # noinspection PyDataclass
         return sum(len(getattr(self, f.name)) for f in fields(self))
 
-    def __str__(self) -> str:
+    def __str__(self: SizedDataclassInstance) -> str:
         parts = []
+        # noinspection PyDataclass
         for f in fields(self):
             count = len(getattr(self, f.name))
             if count > 0:
@@ -672,14 +683,16 @@ class Objective:
     weight_max_tardiness: int = 0
     weight_total_setup_time: int = 0
 
-    def __post_init__(self):
+    def __post_init__(self: DataclassInstance):
+        # noinspection PyDataclass
         for f in fields(self):
             value = getattr(self, f.name)
             if value < 0:
                 raise ValueError(f"{f.name} < 0 not understood.")
 
-    def __str__(self) -> str:
+    def __str__(self: DataclassInstance) -> str:
         parts = []
+        # noinspection PyDataclass
         for f in fields(self):
             value = getattr(self, f.name)
             if value > 0:
