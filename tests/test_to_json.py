@@ -6,7 +6,7 @@ from pyjobshop.ProblemData import resource_filter
 from pyjobshop.utils import to_json
 
 
-def test_jsp_lawrence():
+def test_to_json():
     model: Model = build_lawrence_instance()
     result = model.solve(display=False)
 
