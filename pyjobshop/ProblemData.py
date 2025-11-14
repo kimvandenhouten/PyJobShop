@@ -5,10 +5,14 @@ from collections import Counter, defaultdict
 from copy import deepcopy
 from dataclasses import dataclass, field, fields
 from itertools import pairwise
-from typing import Any, ClassVar, Protocol, Sequence, Sized, TypeVar
+from typing import Protocol, Sequence, TypeVar
 
 from pyjobshop.constants import MAX_VALUE
-from pyjobshop.utils import from_dict
+from pyjobshop.utils import (
+    DataclassInstance,
+    SizedDataclassInstance,
+    from_dict,
+)
 
 _T = TypeVar("_T")
 
@@ -323,14 +327,6 @@ class Mode:
 
         if len(self.resources) != len(self.demands):
             raise ValueError("resources and demands must have same length.")
-
-
-class DataclassInstance(Protocol):
-    __dataclass_fields__: ClassVar[dict[str, Any]]
-
-
-class SizedDataclassInstance(DataclassInstance, Sized, Protocol):
-    pass
 
 
 class IterableMixin:
@@ -1216,3 +1212,12 @@ class ProblemData:
         if not (0 <= task < self.num_tasks):
             raise ValueError(f"Invalid task index {task}.")
         return self._task2resources[task]
+
+
+DATACLASSES = tuple(
+    cls
+    for cls in globals().values()
+    if dataclasses.is_dataclass(cls)
+    and isinstance(cls, type)
+    and cls.__module__ == __name__
+)

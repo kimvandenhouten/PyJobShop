@@ -1,9 +1,10 @@
+import json
+
 from numpy.testing import assert_equal
 
 from benchmarks.test_benchmarks import build_lawrence_instance
-from pyjobshop import Model, ProblemData
-from pyjobshop.ProblemData import resource_filter
-from pyjobshop.utils import to_json
+from pyjobshop import DATACLASSES, Model, ProblemData
+from pyjobshop.utils import DataclassDecoder, DataclassEncoder
 
 
 def test_to_json():
@@ -14,11 +15,15 @@ def test_to_json():
 
     # Create the original model data
     pd: ProblemData = model.data()
-    json_str = to_json(pd, resource_filter) + "\n"
+    json_str = json.dumps(pd, cls=DataclassEncoder, indent=2) + "\n"
     with open(output_location, "w", encoding="utf-8") as f:
         f.write(json_str)
 
-    problem_data = ProblemData.from_json("tests/data/model.json")
+    problem_data: ProblemData
+    with open(output_location, "r", encoding="utf-8") as f:
+        problem_data = json.load(
+            f, cls=DataclassDecoder, class_list=DATACLASSES
+        )
     model_new = Model.from_data(problem_data)
     result2 = model_new.solve(display=False)
 

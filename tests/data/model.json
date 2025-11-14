@@ -1,6 +1,8 @@
 {
+  "__class__": "ProblemData",
   "jobs": [
     {
+      "__class__": "Job",
       "weight": 1,
       "release_date": 0,
       "deadline": 4398046511104,
@@ -15,6 +17,7 @@
       "name": ""
     },
     {
+      "__class__": "Job",
       "weight": 1,
       "release_date": 0,
       "deadline": 4398046511104,
@@ -29,6 +32,7 @@
       "name": ""
     },
     {
+      "__class__": "Job",
       "weight": 1,
       "release_date": 0,
       "deadline": 4398046511104,
@@ -43,6 +47,7 @@
       "name": ""
     },
     {
+      "__class__": "Job",
       "weight": 1,
       "release_date": 0,
       "deadline": 4398046511104,
@@ -57,6 +62,7 @@
       "name": ""
     },
     {
+      "__class__": "Job",
       "weight": 1,
       "release_date": 0,
       "deadline": 4398046511104,
@@ -71,6 +77,7 @@
       "name": ""
     },
     {
+      "__class__": "Job",
       "weight": 1,
       "release_date": 0,
       "deadline": 4398046511104,
@@ -85,6 +92,7 @@
       "name": ""
     },
     {
+      "__class__": "Job",
       "weight": 1,
       "release_date": 0,
       "deadline": 4398046511104,
@@ -99,6 +107,7 @@
       "name": ""
     },
     {
+      "__class__": "Job",
       "weight": 1,
       "release_date": 0,
       "deadline": 4398046511104,
@@ -113,6 +122,7 @@
       "name": ""
     },
     {
+      "__class__": "Job",
       "weight": 1,
       "release_date": 0,
       "deadline": 4398046511104,
@@ -127,6 +137,7 @@
       "name": ""
     },
     {
+      "__class__": "Job",
       "weight": 1,
       "release_date": 0,
       "deadline": 4398046511104,
@@ -143,38 +154,39 @@
   ],
   "resources": [
     {
+      "__class__": "Machine",
       "breaks": [],
       "no_idle": false,
-      "name": "",
-      "resource_type": "Machine"
+      "name": ""
     },
     {
+      "__class__": "Machine",
       "breaks": [],
       "no_idle": false,
-      "name": "",
-      "resource_type": "Machine"
+      "name": ""
     },
     {
+      "__class__": "Machine",
       "breaks": [],
       "no_idle": false,
-      "name": "",
-      "resource_type": "Machine"
+      "name": ""
     },
     {
+      "__class__": "Machine",
       "breaks": [],
       "no_idle": false,
-      "name": "",
-      "resource_type": "Machine"
+      "name": ""
     },
     {
+      "__class__": "Machine",
       "breaks": [],
       "no_idle": false,
-      "name": "",
-      "resource_type": "Machine"
+      "name": ""
     }
   ],
   "tasks": [
     {
+      "__class__": "Task",
       "job": 0,
       "earliest_start": 0,
       "latest_start": 4398046511104,
@@ -186,6 +198,7 @@
       "name": ""
     },
     {
+      "__class__": "Task",
       "job": 0,
       "earliest_start": 0,
       "latest_start": 4398046511104,
@@ -197,6 +210,7 @@
       "name": ""
     },
     {
+      "__class__": "Task",
       "job": 0,
       "earliest_start": 0,
       "latest_start": 4398046511104,
@@ -208,6 +222,7 @@
       "name": ""
     },
     {
+      "__class__": "Task",
       "job": 0,
       "earliest_start": 0,
       "latest_start": 4398046511104,
@@ -219,6 +234,7 @@
       "name": ""
     },
     {
+      "__class__": "Task",
       "job": 0,
       "earliest_start": 0,
       "latest_start": 4398046511104,
@@ -230,6 +246,7 @@
       "name": ""
     },
     {
+      "__class__": "Task",
       "job": 1,
       "earliest_start": 0,
       "latest_start": 4398046511104,
@@ -241,6 +258,7 @@
       "name": ""
     },
     {
+      "__class__": "Task",
       "job": 1,
       "earliest_start": 0,
       "latest_start": 4398046511104,
@@ -252,6 +270,7 @@
       "name": ""
     },
     {
+      "__class__": "Task",
       "job": 1,
       "earliest_start": 0,
       "latest_start": 4398046511104,
@@ -263,6 +282,7 @@
       "name": ""
     },
     {
+      "__class__": "Task",
       "job": 1,
       "earliest_start": 0,
       "latest_start": 4398046511104,
@@ -274,6 +294,7 @@
       "name": ""
     },
     {
+      "__class__": "Task",
       "job": 1,
       "earliest_start": 0,
       "latest_start": 4398046511104,
@@ -285,6 +306,7 @@
       "name": ""
     },
     {
+      "__class__": "Task",
       "job": 2,
       "earliest_start": 0,
       "latest_start": 4398046511104,
@@ -296,6 +318,7 @@
       "name": ""
     },
     {
+      "__class__": "Task",
       "job": 2,
       "earliest_start": 0,
       "latest_start": 4398046511104,
@@ -307,6 +330,7 @@
       "name": ""
     },
     {
+      "__class__": "Task",
       "job": 2,
       "earliest_start": 0,
       "latest_start": 4398046511104,
@@ -318,6 +342,7 @@
       "name": ""
     },
     {
+      "__class__": "Task",
       "job": 2,
       "earliest_start": 0,
       "latest_start": 4398046511104,
@@ -329,6 +354,7 @@
       "name": ""
     },
     {
+      "__class__": "Task",
       "job": 2,
       "earliest_start": 0,
       "latest_start": 4398046511104,
@@ -340,6 +366,7 @@
       "name": ""
     },
     {
+      "__class__": "Task",
       "job": 3,
       "earliest_start": 0,
       "latest_start": 4398046511104,
@@ -351,6 +378,7 @@
       "name": ""
     },
     {
+      "__class__": "Task",
       "job": 3,
       "earliest_start": 0,
       "latest_start": 4398046511104,
@@ -362,6 +390,7 @@
       "name": ""
     },
     {
+      "__class__": "Task",
       "job": 3,
       "earliest_start": 0,
       "latest_start": 4398046511104,
@@ -373,6 +402,7 @@
       "name": ""
     },
     {
+      "__class__": "Task",
       "job": 3,
       "earliest_start": 0,
       "latest_start": 4398046511104,
@@ -384,6 +414,7 @@
       "name": ""
     },
     {
+      "__class__": "Task",
       "job": 3,
       "earliest_start": 0,
       "latest_start": 4398046511104,
@@ -395,6 +426,7 @@
       "name": ""
     },
     {
+      "__class__": "Task",
       "job": 4,
       "earliest_start": 0,
       "latest_start": 4398046511104,
@@ -406,6 +438,7 @@
       "name": ""
     },
     {
+      "__class__": "Task",
       "job": 4,
       "earliest_start": 0,
       "latest_start": 4398046511104,
@@ -417,6 +450,7 @@
       "name": ""
     },
     {
+      "__class__": "Task",
       "job": 4,
       "earliest_start": 0,
       "latest_start": 4398046511104,
@@ -428,6 +462,7 @@
       "name": ""
     },
     {
+      "__class__": "Task",
       "job": 4,
       "earliest_start": 0,
       "latest_start": 4398046511104,
@@ -439,6 +474,7 @@
       "name": ""
     },
     {
+      "__class__": "Task",
       "job": 4,
       "earliest_start": 0,
       "latest_start": 4398046511104,
@@ -450,6 +486,7 @@
       "name": ""
     },
     {
+      "__class__": "Task",
       "job": 5,
       "earliest_start": 0,
       "latest_start": 4398046511104,
@@ -461,6 +498,7 @@
       "name": ""
     },
     {
+      "__class__": "Task",
       "job": 5,
       "earliest_start": 0,
       "latest_start": 4398046511104,
@@ -472,6 +510,7 @@
       "name": ""
     },
     {
+      "__class__": "Task",
       "job": 5,
       "earliest_start": 0,
       "latest_start": 4398046511104,
@@ -483,6 +522,7 @@
       "name": ""
     },
     {
+      "__class__": "Task",
       "job": 5,
       "earliest_start": 0,
       "latest_start": 4398046511104,
@@ -494,6 +534,7 @@
       "name": ""
     },
     {
+      "__class__": "Task",
       "job": 5,
       "earliest_start": 0,
       "latest_start": 4398046511104,
@@ -505,6 +546,7 @@
       "name": ""
     },
     {
+      "__class__": "Task",
       "job": 6,
       "earliest_start": 0,
       "latest_start": 4398046511104,
@@ -516,6 +558,7 @@
       "name": ""
     },
     {
+      "__class__": "Task",
       "job": 6,
       "earliest_start": 0,
       "latest_start": 4398046511104,
@@ -527,6 +570,7 @@
       "name": ""
     },
     {
+      "__class__": "Task",
       "job": 6,
       "earliest_start": 0,
       "latest_start": 4398046511104,
@@ -538,6 +582,7 @@
       "name": ""
     },
     {
+      "__class__": "Task",
       "job": 6,
       "earliest_start": 0,
       "latest_start": 4398046511104,
@@ -549,6 +594,7 @@
       "name": ""
     },
     {
+      "__class__": "Task",
       "job": 6,
       "earliest_start": 0,
       "latest_start": 4398046511104,
@@ -560,6 +606,7 @@
       "name": ""
     },
     {
+      "__class__": "Task",
       "job": 7,
       "earliest_start": 0,
       "latest_start": 4398046511104,
@@ -571,6 +618,7 @@
       "name": ""
     },
     {
+      "__class__": "Task",
       "job": 7,
       "earliest_start": 0,
       "latest_start": 4398046511104,
@@ -582,6 +630,7 @@
       "name": ""
     },
     {
+      "__class__": "Task",
       "job": 7,
       "earliest_start": 0,
       "latest_start": 4398046511104,
@@ -593,6 +642,7 @@
       "name": ""
     },
     {
+      "__class__": "Task",
       "job": 7,
       "earliest_start": 0,
       "latest_start": 4398046511104,
@@ -604,6 +654,7 @@
       "name": ""
     },
     {
+      "__class__": "Task",
       "job": 7,
       "earliest_start": 0,
       "latest_start": 4398046511104,
@@ -615,6 +666,7 @@
       "name": ""
     },
     {
+      "__class__": "Task",
       "job": 8,
       "earliest_start": 0,
       "latest_start": 4398046511104,
@@ -626,6 +678,7 @@
       "name": ""
     },
     {
+      "__class__": "Task",
       "job": 8,
       "earliest_start": 0,
       "latest_start": 4398046511104,
@@ -637,6 +690,7 @@
       "name": ""
     },
     {
+      "__class__": "Task",
       "job": 8,
       "earliest_start": 0,
       "latest_start": 4398046511104,
@@ -648,6 +702,7 @@
       "name": ""
     },
     {
+      "__class__": "Task",
       "job": 8,
       "earliest_start": 0,
       "latest_start": 4398046511104,
@@ -659,6 +714,7 @@
       "name": ""
     },
     {
+      "__class__": "Task",
       "job": 8,
       "earliest_start": 0,
       "latest_start": 4398046511104,
@@ -670,6 +726,7 @@
       "name": ""
     },
     {
+      "__class__": "Task",
       "job": 9,
       "earliest_start": 0,
       "latest_start": 4398046511104,
@@ -681,6 +738,7 @@
       "name": ""
     },
     {
+      "__class__": "Task",
       "job": 9,
       "earliest_start": 0,
       "latest_start": 4398046511104,
@@ -692,6 +750,7 @@
       "name": ""
     },
     {
+      "__class__": "Task",
       "job": 9,
       "earliest_start": 0,
       "latest_start": 4398046511104,
@@ -703,6 +762,7 @@
       "name": ""
     },
     {
+      "__class__": "Task",
       "job": 9,
       "earliest_start": 0,
       "latest_start": 4398046511104,
@@ -714,6 +774,7 @@
       "name": ""
     },
     {
+      "__class__": "Task",
       "job": 9,
       "earliest_start": 0,
       "latest_start": 4398046511104,
@@ -727,6 +788,7 @@
   ],
   "modes": [
     {
+      "__class__": "Mode",
       "task": 0,
       "resources": [
         1
@@ -738,6 +800,7 @@
       "name": ""
     },
     {
+      "__class__": "Mode",
       "task": 1,
       "resources": [
         0
@@ -749,6 +812,7 @@
       "name": ""
     },
     {
+      "__class__": "Mode",
       "task": 2,
       "resources": [
         4
@@ -760,6 +824,7 @@
       "name": ""
     },
     {
+      "__class__": "Mode",
       "task": 3,
       "resources": [
         3
@@ -771,6 +836,7 @@
       "name": ""
     },
     {
+      "__class__": "Mode",
       "task": 4,
       "resources": [
         2
@@ -782,6 +848,7 @@
       "name": ""
     },
     {
+      "__class__": "Mode",
       "task": 5,
       "resources": [
         0
@@ -793,6 +860,7 @@
       "name": ""
     },
     {
+      "__class__": "Mode",
       "task": 6,
       "resources": [
         3
@@ -804,6 +872,7 @@
       "name": ""
     },
     {
+      "__class__": "Mode",
       "task": 7,
       "resources": [
         4
@@ -815,6 +884,7 @@
       "name": ""
     },
     {
+      "__class__": "Mode",
       "task": 8,
       "resources": [
         2
@@ -826,6 +896,7 @@
       "name": ""
     },
     {
+      "__class__": "Mode",
       "task": 9,
       "resources": [
         1
@@ -837,6 +908,7 @@
       "name": ""
     },
     {
+      "__class__": "Mode",
       "task": 10,
       "resources": [
         3
@@ -848,6 +920,7 @@
       "name": ""
     },
     {
+      "__class__": "Mode",
       "task": 11,
       "resources": [
         4
@@ -859,6 +932,7 @@
       "name": ""
     },
     {
+      "__class__": "Mode",
       "task": 12,
       "resources": [
         1
@@ -870,6 +944,7 @@
       "name": ""
     },
     {
+      "__class__": "Mode",
       "task": 13,
       "resources": [
         2
@@ -881,6 +956,7 @@
       "name": ""
     },
     {
+      "__class__": "Mode",
       "task": 14,
       "resources": [
         0
@@ -892,6 +968,7 @@
       "name": ""
     },
     {
+      "__class__": "Mode",
       "task": 15,
       "resources": [
         1
@@ -903,6 +980,7 @@
       "name": ""
     },
     {
+      "__class__": "Mode",
       "task": 16,
       "resources": [
         0
@@ -914,6 +992,7 @@
       "name": ""
     },
     {
+      "__class__": "Mode",
       "task": 17,
       "resources": [
         4
@@ -925,6 +1004,7 @@
       "name": ""
     },
     {
+      "__class__": "Mode",
       "task": 18,
       "resources": [
         2
@@ -936,6 +1016,7 @@
       "name": ""
     },
     {
+      "__class__": "Mode",
       "task": 19,
       "resources": [
         3
@@ -947,6 +1028,7 @@
       "name": ""
     },
     {
+      "__class__": "Mode",
       "task": 20,
       "resources": [
         0
@@ -958,6 +1040,7 @@
       "name": ""
     },
     {
+      "__class__": "Mode",
       "task": 21,
       "resources": [
         3
@@ -969,6 +1052,7 @@
       "name": ""
     },
     {
+      "__class__": "Mode",
       "task": 22,
       "resources": [
         2
@@ -980,6 +1064,7 @@
       "name": ""
     },
     {
+      "__class__": "Mode",
       "task": 23,
       "resources": [
         1
@@ -991,6 +1076,7 @@
       "name": ""
     },
     {
+      "__class__": "Mode",
       "task": 24,
       "resources": [
         4
@@ -1002,6 +1088,7 @@
       "name": ""
     },
     {
+      "__class__": "Mode",
       "task": 25,
       "resources": [
         1
@@ -1013,6 +1100,7 @@
       "name": ""
     },
     {
+      "__class__": "Mode",
       "task": 26,
       "resources": [
         2
@@ -1024,6 +1112,7 @@
       "name": ""
     },
     {
+      "__class__": "Mode",
       "task": 27,
       "resources": [
         4
@@ -1035,6 +1124,7 @@
       "name": ""
     },
     {
+      "__class__": "Mode",
       "task": 28,
       "resources": [
         0
@@ -1046,6 +1136,7 @@
       "name": ""
     },
     {
+      "__class__": "Mode",
       "task": 29,
       "resources": [
         3
@@ -1057,6 +1148,7 @@
       "name": ""
     },
     {
+      "__class__": "Mode",
       "task": 30,
       "resources": [
         3
@@ -1068,6 +1160,7 @@
       "name": ""
     },
     {
+      "__class__": "Mode",
       "task": 31,
       "resources": [
         4
@@ -1079,6 +1172,7 @@
       "name": ""
     },
     {
+      "__class__": "Mode",
       "task": 32,
       "resources": [
         1
@@ -1090,6 +1184,7 @@
       "name": ""
     },
     {
+      "__class__": "Mode",
       "task": 33,
       "resources": [
         2
@@ -1101,6 +1196,7 @@
       "name": ""
     },
     {
+      "__class__": "Mode",
       "task": 34,
       "resources": [
         0
@@ -1112,6 +1208,7 @@
       "name": ""
     },
     {
+      "__class__": "Mode",
       "task": 35,
       "resources": [
         2
@@ -1123,6 +1220,7 @@
       "name": ""
     },
     {
+      "__class__": "Mode",
       "task": 36,
       "resources": [
         0
@@ -1134,6 +1232,7 @@
       "name": ""
     },
     {
+      "__class__": "Mode",
       "task": 37,
       "resources": [
         1
@@ -1145,6 +1244,7 @@
       "name": ""
     },
     {
+      "__class__": "Mode",
       "task": 38,
       "resources": [
         3
@@ -1156,6 +1256,7 @@
       "name": ""
     },
     {
+      "__class__": "Mode",
       "task": 39,
       "resources": [
         4
@@ -1167,6 +1268,7 @@
       "name": ""
     },
     {
+      "__class__": "Mode",
       "task": 40,
       "resources": [
         3
@@ -1178,6 +1280,7 @@
       "name": ""
     },
     {
+      "__class__": "Mode",
       "task": 41,
       "resources": [
         1
@@ -1189,6 +1292,7 @@
       "name": ""
     },
     {
+      "__class__": "Mode",
       "task": 42,
       "resources": [
         4
@@ -1200,6 +1304,7 @@
       "name": ""
     },
     {
+      "__class__": "Mode",
       "task": 43,
       "resources": [
         0
@@ -1211,6 +1316,7 @@
       "name": ""
     },
     {
+      "__class__": "Mode",
       "task": 44,
       "resources": [
         2
@@ -1222,6 +1328,7 @@
       "name": ""
     },
     {
+      "__class__": "Mode",
       "task": 45,
       "resources": [
         4
@@ -1233,6 +1340,7 @@
       "name": ""
     },
     {
+      "__class__": "Mode",
       "task": 46,
       "resources": [
         3
@@ -1244,6 +1352,7 @@
       "name": ""
     },
     {
+      "__class__": "Mode",
       "task": 47,
       "resources": [
         2
@@ -1255,6 +1364,7 @@
       "name": ""
     },
     {
+      "__class__": "Mode",
       "task": 48,
       "resources": [
         1
@@ -1266,6 +1376,7 @@
       "name": ""
     },
     {
+      "__class__": "Mode",
       "task": 49,
       "resources": [
         0
@@ -1278,205 +1389,246 @@
     }
   ],
   "constraints": {
+    "__class__": "Constraints",
     "start_before_start": [],
     "start_before_end": [],
     "end_before_start": [
       {
+        "__class__": "EndBeforeStart",
         "task1": 0,
         "task2": 1,
         "delay": 0
       },
       {
+        "__class__": "EndBeforeStart",
         "task1": 1,
         "task2": 2,
         "delay": 0
       },
       {
+        "__class__": "EndBeforeStart",
         "task1": 2,
         "task2": 3,
         "delay": 0
       },
       {
+        "__class__": "EndBeforeStart",
         "task1": 3,
         "task2": 4,
         "delay": 0
       },
       {
+        "__class__": "EndBeforeStart",
         "task1": 5,
         "task2": 6,
         "delay": 0
       },
       {
+        "__class__": "EndBeforeStart",
         "task1": 6,
         "task2": 7,
         "delay": 0
       },
       {
+        "__class__": "EndBeforeStart",
         "task1": 7,
         "task2": 8,
         "delay": 0
       },
       {
+        "__class__": "EndBeforeStart",
         "task1": 8,
         "task2": 9,
         "delay": 0
       },
       {
+        "__class__": "EndBeforeStart",
         "task1": 10,
         "task2": 11,
         "delay": 0
       },
       {
+        "__class__": "EndBeforeStart",
         "task1": 11,
         "task2": 12,
         "delay": 0
       },
       {
+        "__class__": "EndBeforeStart",
         "task1": 12,
         "task2": 13,
         "delay": 0
       },
       {
+        "__class__": "EndBeforeStart",
         "task1": 13,
         "task2": 14,
         "delay": 0
       },
       {
+        "__class__": "EndBeforeStart",
         "task1": 15,
         "task2": 16,
         "delay": 0
       },
       {
+        "__class__": "EndBeforeStart",
         "task1": 16,
         "task2": 17,
         "delay": 0
       },
       {
+        "__class__": "EndBeforeStart",
         "task1": 17,
         "task2": 18,
         "delay": 0
       },
       {
+        "__class__": "EndBeforeStart",
         "task1": 18,
         "task2": 19,
         "delay": 0
       },
       {
+        "__class__": "EndBeforeStart",
         "task1": 20,
         "task2": 21,
         "delay": 0
       },
       {
+        "__class__": "EndBeforeStart",
         "task1": 21,
         "task2": 22,
         "delay": 0
       },
       {
+        "__class__": "EndBeforeStart",
         "task1": 22,
         "task2": 23,
         "delay": 0
       },
       {
+        "__class__": "EndBeforeStart",
         "task1": 23,
         "task2": 24,
         "delay": 0
       },
       {
+        "__class__": "EndBeforeStart",
         "task1": 25,
         "task2": 26,
         "delay": 0
       },
       {
+        "__class__": "EndBeforeStart",
         "task1": 26,
         "task2": 27,
         "delay": 0
       },
       {
+        "__class__": "EndBeforeStart",
         "task1": 27,
         "task2": 28,
         "delay": 0
       },
       {
+        "__class__": "EndBeforeStart",
         "task1": 28,
         "task2": 29,
         "delay": 0
       },
       {
+        "__class__": "EndBeforeStart",
         "task1": 30,
         "task2": 31,
         "delay": 0
       },
       {
+        "__class__": "EndBeforeStart",
         "task1": 31,
         "task2": 32,
         "delay": 0
       },
       {
+        "__class__": "EndBeforeStart",
         "task1": 32,
         "task2": 33,
         "delay": 0
       },
       {
+        "__class__": "EndBeforeStart",
         "task1": 33,
         "task2": 34,
         "delay": 0
       },
       {
+        "__class__": "EndBeforeStart",
         "task1": 35,
         "task2": 36,
         "delay": 0
       },
       {
+        "__class__": "EndBeforeStart",
         "task1": 36,
         "task2": 37,
         "delay": 0
       },
       {
+        "__class__": "EndBeforeStart",
         "task1": 37,
         "task2": 38,
         "delay": 0
       },
       {
+        "__class__": "EndBeforeStart",
         "task1": 38,
         "task2": 39,
         "delay": 0
       },
       {
+        "__class__": "EndBeforeStart",
         "task1": 40,
         "task2": 41,
         "delay": 0
       },
       {
+        "__class__": "EndBeforeStart",
         "task1": 41,
         "task2": 42,
         "delay": 0
       },
       {
+        "__class__": "EndBeforeStart",
         "task1": 42,
         "task2": 43,
         "delay": 0
       },
       {
+        "__class__": "EndBeforeStart",
         "task1": 43,
         "task2": 44,
         "delay": 0
       },
       {
+        "__class__": "EndBeforeStart",
         "task1": 45,
         "task2": 46,
         "delay": 0
       },
       {
+        "__class__": "EndBeforeStart",
         "task1": 46,
         "task2": 47,
         "delay": 0
       },
       {
+        "__class__": "EndBeforeStart",
         "task1": 47,
         "task2": 48,
         "delay": 0
       },
       {
+        "__class__": "EndBeforeStart",
         "task1": 48,
         "task2": 49,
         "delay": 0
@@ -1494,6 +1646,7 @@
     "select_exactly_one": []
   },
   "objective": {
+    "__class__": "Objective",
     "weight_makespan": 1,
     "weight_tardy_jobs": 0,
     "weight_total_flow_time": 0,
