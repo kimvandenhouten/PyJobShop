@@ -1,5 +1,4 @@
 import dataclasses
-import json
 import typing
 from collections import Counter, defaultdict
 from copy import deepcopy
@@ -12,7 +11,6 @@ from pyjobshop.utils import (
     DataclassInstance,
     SizedDataclassInstance,
     decoder_factory,
-    from_dict,
 )
 
 _T = TypeVar("_T")
@@ -788,41 +786,6 @@ class ProblemData:
             elif isinstance(resource, Consumable):
                 self.consumable_idcs.append(idx)
             # LP TODO flag an error if none of these matches?
-
-    @classmethod
-    def from_dict(cls, data_dict):
-        """
-        Creates a dictionary from a ProblemData instance.
-        """
-        resources = []
-        for resource_dict in data_dict["resources"]:
-            # make a copy
-            r = dict(resource_dict)
-            resource_type = r.pop("resource_type", None)
-
-            if resource_type == "Machine":
-                resources.append(Machine(**r))
-            elif resource_type == "Renewable":
-                resources.append(Renewable(**r))
-            elif resource_type == "Consumable":
-                resources.append(Consumable(**r))
-            else:
-                raise ValueError(f"Unknown resource type: {resource_type!r}")
-
-        return cls(
-            jobs=[Job(**job_params) for job_params in data_dict["jobs"]],
-            resources=resources,
-            tasks=[Task(**task_params) for task_params in data_dict["tasks"]],
-            modes=[Mode(**mode_params) for mode_params in data_dict["modes"]],
-            constraints=from_dict(Constraints, data_dict["constraints"]),
-            objective=Objective(**data_dict["objective"]),
-        )
-
-    @classmethod
-    def from_json(cls, json_location: str):
-        with open(json_location, "r", encoding="utf-8") as f:
-            as_dict = json.load(f)
-        return cls.from_dict(as_dict)
 
     def __str__(self):
         lines = [
