@@ -11,6 +11,7 @@ from pyjobshop.constants import MAX_VALUE
 from pyjobshop.utils import (
     DataclassInstance,
     SizedDataclassInstance,
+    decoder_factory,
     from_dict,
 )
 
@@ -1214,10 +1215,13 @@ class ProblemData:
         return self._task2resources[task]
 
 
-DATACLASSES = tuple(
-    cls
-    for cls in globals().values()
-    if dataclasses.is_dataclass(cls)
-    and isinstance(cls, type)
-    and cls.__module__ == __name__
+ProblemDataDecoder = decoder_factory(
+    "ProblemDataDecoder",
+    (
+        cls
+        for cls in globals().values()
+        if dataclasses.is_dataclass(cls)
+        and isinstance(cls, type)
+        and cls.__module__ == __name__
+    ),
 )

@@ -3,8 +3,8 @@ import json
 from numpy.testing import assert_equal
 
 from benchmarks.test_benchmarks import build_lawrence_instance
-from pyjobshop import DATACLASSES, Model, ProblemData
-from pyjobshop.utils import DataclassDecoder, DataclassEncoder
+from pyjobshop import Model, ProblemData, ProblemDataDecoder
+from pyjobshop.utils import DataclassEncoder
 
 
 def test_to_json():
@@ -21,9 +21,7 @@ def test_to_json():
 
     problem_data: ProblemData
     with open(output_location, "r", encoding="utf-8") as f:
-        problem_data = json.load(
-            f, cls=DataclassDecoder, class_list=DATACLASSES
-        )
+        problem_data = json.load(f, cls=ProblemDataDecoder)
     model_new = Model.from_data(problem_data)
     result2 = model_new.solve(display=False)
 

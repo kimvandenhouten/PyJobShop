@@ -7,6 +7,7 @@ from typing import (
     Any,
     Callable,
     ClassVar,
+    Iterable,
     Protocol,
     Sized,
     get_args,
@@ -134,22 +135,17 @@ class DataclassEncoder(json.JSONEncoder):
         return result
 
 
-class DataclassDecoder(json.JSONDecoder):
-    serializable_classes: dict[str, type[DataclassInstance]]
-    delegate_object_hook: Callable[[object], object] | None
+class AbstractDataclassDecoder(json.JSONDecoder):
+    serializable_classes: dict[str, type[DataclassInstance]] | None
+    delegate_object_hook: Callable[[object], object] | None = None
 
-    def __init__(self, class_list=(), **kwargs):
+    def __init__(self, **kwargs):
         self.delegate_object_hook = kwargs.pop("object_hook", None)
-        self.serializable_classes = {}
-        for cls in class_list:
-            if not dataclasses.is_dataclass(cls):
-                raise TypeError(f"{cls.__name__} is not a dataclass")
-            if cls.__name__ in self.serializable_classes:
-                raise ValueError(
-                    f"Duplicate name {cls.__name__} in class_list"
-                )
-            self.serializable_classes[cls.__name__] = cls
-        super().__init__(object_hook=self.object_hook)
+        super().__init__(object_hook=self.object_hook, **kwargs)
+
+    def __init_subclass__(cls, **kwargs):
+        if not hasattr(cls, "serializable_classes"):
+            raise TypeError(f"{cls.__name__} must define serializable_classes")
 
     def object_hook(self, obj):
         if self.delegate_object_hook is not None:
@@ -196,3 +192,37 @@ class DataclassDecoder(json.JSONDecoder):
                 f"Instantiation of dataclass {cls.__name__} "
                 "failed. (Does it specify InitVars?)"
             ) from e
+
+
+def _build_serializable_classes_dict(
+    class_list: Iterable[type],
+) -> dict[str, type[DataclassInstance]]:
+    result: dict[str, type[DataclassInstance]] = {}
+    for cls in class_list:
+        if cls.__name__ in result:
+            raise ValueError(f"Duplicate name {cls.__name__} in class_list")
+        if not dataclasses.is_dataclass(cls):
+            raise TypeError(f"{cls.__name__} is not a dataclass")
+        result[cls.__name__] = cls
+    return result
+
+
+class DataclassDecoder(AbstractDataclassDecoder):
+    serializable_classes = None
+
+    def __init__(self, class_list=(), **kwargs):
+        self.serializable_classes = _build_serializable_classes_dict(
+            class_list
+        )
+        super().__init__(**kwargs)
+
+
+def decoder_factory(name: str, class_list: Iterable[type]):
+    def class_body(ns):
+        ns["serializable_classes"] = _build_serializable_classes_dict(
+            class_list
+        )
+
+    return types.new_class(
+        name, (AbstractDataclassDecoder,), exec_body=class_body
+    )
